@@ -4,13 +4,14 @@ from torchtyping import TensorType, patch_typeguard
 from typeguard import typechecked
 
 from model.config import LMConfig
-from model.position_encoders import SinCosEncoding
+from model.position_encoder import SinCosEncoding
 from model.transformer_block import StandardTransformerBlock
 
 patch_typeguard()
 
 
 class GenerativeLM(nn.Module):
+    # TODO: add mask
     def __init__(self, config: LMConfig):
         super().__init__()
         self.model = nn.Sequential(
@@ -38,4 +39,10 @@ if __name__ == '__main__':
     )
     model = GenerativeLM(mock_config)
     mock_input = torch.randint(0, 10, (1, 128))
-    print(model(mock_input).shape)
+    mock_label = torch.randint(0, 10, (1, 128))
+    lm_logits = model(mock_input)
+    shift_logits = lm_logits[..., :-1, :].contiguous()
+    shift_labels = mock_label[..., 1:].contiguous()
+    loss_fct = nn.CrossEntropyLoss()
+    loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+    print(loss)

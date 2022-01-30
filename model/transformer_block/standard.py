@@ -7,6 +7,7 @@ patch_typeguard()
 
 
 class StandardTransformerBlock(nn.Module):
+    # TODO: add mask
     def __init__(self, hidden_size: int, num_heads: int):
         super().__init__()
         self.layer_norm_1 = nn.LayerNorm(hidden_size)
