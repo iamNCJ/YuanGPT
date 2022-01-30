@@ -7,3 +7,4 @@ class LMConfig:
     attention_heads: int
     layer_num: int
     seq_length: int
+    vocab_size: int
