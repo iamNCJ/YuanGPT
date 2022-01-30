@@ -20,11 +20,22 @@ class GenerativeLM(nn.Module):
             *[StandardTransformerBlock(config.hidden_size, config.attention_heads) for _ in range(config.layer_num)],
             nn.Linear(config.hidden_size, config.vocab_size, bias=False),
         )
+        self.loss_fct = nn.CrossEntropyLoss()
 
     @typechecked
     def forward(self, input_ids: TensorType["batch_size", "seq_length"]) \
             -> TensorType["batch_size", "seq_length", "vocab_size"]:
         return self.model(input_ids)
+
+    @typechecked
+    def loss(
+            self,
+            logits: TensorType["batch_size", "seq_length", "hidden_size"],
+            labels: TensorType["batch_size", "seq_length"]
+    ) -> TensorType:
+        shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = labels[..., 1:].contiguous()
+        return self.loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 
 
 if __name__ == '__main__':
@@ -41,8 +52,5 @@ if __name__ == '__main__':
     mock_input = torch.randint(0, 10, (1, 128))
     mock_label = torch.randint(0, 10, (1, 128))
     lm_logits = model(mock_input)
-    shift_logits = lm_logits[..., :-1, :].contiguous()
-    shift_labels = mock_label[..., 1:].contiguous()
-    loss_fct = nn.CrossEntropyLoss()
-    loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+    loss = model.loss(lm_logits, mock_label)
     print(loss)
