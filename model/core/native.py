@@ -39,8 +39,6 @@ class GenerativeLM(nn.Module):
 
 
 if __name__ == '__main__':
-    from model.config import LMConfig
-
     mock_config = LMConfig(
         vocab_size=10,
         hidden_size=512,

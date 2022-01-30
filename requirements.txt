@@ -1,0 +1,3 @@
+pytorch-lightning==1.5.0
+torch==1.10.0
+torchtyping==0.1.4

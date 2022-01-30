@@ -1,2 +1,2 @@
 # Pytorch Lightning Trainer Wrapper
-# TODO: tbd
+# TODO: wrap into a lightning module and train with pl.Trainer
