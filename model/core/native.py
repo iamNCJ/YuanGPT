@@ -14,6 +14,7 @@ class GenerativeLM(nn.Module):
     # TODO: add mask
     def __init__(self, config: LMConfig):
         super().__init__()
+        self.config = config
         self.model = nn.Sequential(
             nn.Embedding(config.vocab_size, config.hidden_size),
             SinCosEncoding(d_model=config.hidden_size, max_len=config.seq_length),
@@ -36,6 +37,9 @@ class GenerativeLM(nn.Module):
         shift_logits = logits[..., :-1, :].contiguous()
         shift_labels = labels[..., 1:].contiguous()
         return self.loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+
+    def optimizer(self) -> torch.optim.Optimizer:
+        return torch.optim.Adam(self.parameters(), lr=self.config.learning_rate)
 
 
 if __name__ == '__main__':

@@ -8,3 +8,4 @@ class LMConfig:
     layer_num: int
     seq_length: int
     vocab_size: int
+    learning_rate: float
