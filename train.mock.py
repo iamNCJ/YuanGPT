@@ -36,7 +36,6 @@ if __name__ == '__main__':
         },
         "zero_optimization": {
             "stage": 3,
-            "offload_param": False,
             "offload_optimizer": {
                 "device": "cpu",
                 "pin_memory": True,
