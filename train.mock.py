@@ -13,7 +13,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
-        batch_size=32,
+        batch_size=1,
     )
     core_model = NativeModel(mock_config)
     dm = MockDataModule(
