@@ -49,5 +49,5 @@ if __name__ == '__main__':
     core_model = NativeModel(mock_config)
     wrapper_model = LitModel(core_model)
     dm = MockDataModule(vocab_size=mock_config.vocab_size, seq_length=mock_config.seq_length)
-    trainer = pl.Trainer()
+    trainer = pl.Trainer(gpus=-1 if torch.cuda.is_available() else None)
     trainer.fit(wrapper_model, dm)
