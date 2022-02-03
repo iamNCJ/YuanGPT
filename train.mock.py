@@ -30,5 +30,5 @@ if __name__ == '__main__':
         precision=16,
         accelerator='ddp',
         max_epochs=1,
-        plugins='ddp_sharded',
+        strategy='ddp_sharded',
     )
