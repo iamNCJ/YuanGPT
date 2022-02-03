@@ -36,8 +36,8 @@ if __name__ == '__main__':
         },
         "zero_optimization": {
             "stage": 3,
-            "offload_optimizer": True,
-            "offload_param": {
+            "offload_param": False,
+            "offload_optimizer": {
                 "device": "cpu",
                 "pin_memory": True,
                 "buffer_count": 4,
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
-        batch_size=2,
+        batch_size=4,
     )
     core_model = NativeModel(mock_config)
     dm = MockDataModule(
@@ -67,5 +67,5 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy=DeepSpeedPlugin(config=deepspeed_config),
+        strategy=DeepSpeedPlugin(config=deepspeed_config, logging_batch_size_per_gpu=mock_config.batch_size),
     )
