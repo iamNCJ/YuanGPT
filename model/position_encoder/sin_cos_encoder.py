@@ -29,5 +29,5 @@ class SinCosEncoding(nn.Module):
         Return:
             H, H = E + P
         """
-        x = x + self.pe[0, :x.size(0)]
+        x = x + self.pe[:, :, :x.size(-1)]
         return self.dropout(x)

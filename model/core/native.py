@@ -4,13 +4,14 @@ from torchtyping import TensorType, patch_typeguard
 from typeguard import typechecked
 
 from model.config import LMConfig
+from model.core.abstract import ABCModel
 from model.position_encoder import SinCosEncoding
 from model.transformer_block import StandardTransformerBlock
 
 patch_typeguard()
 
 
-class GenerativeLM(nn.Module):
+class GenerativeLM(ABCModel):
     # TODO: add mask
     def __init__(self, config: LMConfig):
         super().__init__()
@@ -49,10 +50,11 @@ if __name__ == '__main__':
         layer_num=6,
         attention_heads=8,
         seq_length=128,
+        learning_rate=0.001
     )
     model = GenerativeLM(mock_config)
-    mock_input = torch.randint(0, 10, (1, 128))
-    mock_label = torch.randint(0, 10, (1, 128))
+    mock_input = torch.randint(0, 10, (4, 128))
+    mock_label = torch.randint(0, 10, (4, 128))
     lm_logits = model(mock_input)
     loss = model.loss(lm_logits, mock_label)
     print(loss)
