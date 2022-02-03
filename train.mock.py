@@ -8,7 +8,12 @@ from trainer.lightning import pl_train
 
 if __name__ == '__main__':
     deepspeed_config = {
-        "zero_allow_untested_optimizer": True,
+        # "zero_allow_untested_optimizer": True,
+        "train_batch_size": 4,
+        "gradient_accumulation_steps": 1,
+        "bf16": {
+            "enabled": True
+        },
         "optimizer": {
             "type": "Adam",
             "params": {
@@ -33,9 +38,7 @@ if __name__ == '__main__':
         "zero_optimization": {
             "stage": 3,
             "offload_optimizer": True,
-            "offload_parameters": False,
-            "contiguous_gradients": True,
-            "overlap_comm": True,
+            "offload_param": False
         },
     }
 
