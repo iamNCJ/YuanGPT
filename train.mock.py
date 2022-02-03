@@ -10,7 +10,6 @@ if __name__ == '__main__':
     deepspeed_config = {
         # "zero_allow_untested_optimizer": True,
         "train_batch_size": 4,
-        "gradient_accumulation_steps": 1,
         "bf16": {
             "enabled": True
         },
