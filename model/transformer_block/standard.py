@@ -26,13 +26,13 @@ class StandardTransformerBlock(nn.Module):
     @typechecked
     def forward(self, x: TensorType["batch_size", "seq_len", "hidden_size"]) \
             -> TensorType["batch_size", "seq_len", "hidden_size"]:
-        residual = self.layer_norm_1(x)
-        residual, _ = self.MHA(residual, residual, residual, need_weights=False)
-        x += residual
-        residual = self.layer_norm_2(x)
-        residual = self.FFN(residual)
-        x += residual
-        return x
+        residual_1 = self.layer_norm_1(x)
+        residual_1, _ = self.MHA(residual_1, residual_1, residual_1, need_weights=False)
+        x_1 = residual_1 + x
+
+        residual_2 = self.layer_norm_2(x_1)
+        residual_2 = self.FFN(residual_2)
+        return x_1 + residual_2
 
 
 if __name__ == '__main__':

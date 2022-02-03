@@ -39,12 +39,12 @@ if __name__ == '__main__':
     from data import MockDataModule
 
     mock_config = LMConfig(
-        vocab_size=51200,
-        hidden_size=3072,
-        layer_num=40,
-        attention_heads=24,
-        seq_length=2048,
-        learning_rate=0.001
+        vocab_size=53228,
+        hidden_size=128,
+        layer_num=1,
+        attention_heads=4,
+        seq_length=128,
+        learning_rate=0.0001
     )
     core_model = NativeModel(mock_config)
     wrapper_model = LitModel(core_model)
