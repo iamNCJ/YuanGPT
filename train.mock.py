@@ -60,5 +60,5 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy=DeepSpeedPlugin(deepspeed_config),
+        strategy='deepspeed_stage_3_offload',
     )
