@@ -33,7 +33,7 @@ if __name__ == '__main__':
         "zero_optimization": {
             "stage": 3,
             "offload_optimizer": True,
-            "offload_parameters": True,
+            "offload_parameters": False,
             "contiguous_gradients": True,
             "overlap_comm": True,
         },
@@ -60,5 +60,5 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy='deepspeed_stage_3_offload',
+        strategy=DeepSpeedPlugin(config=deepspeed_config),
     )
