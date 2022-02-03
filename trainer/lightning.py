@@ -38,16 +38,18 @@ if __name__ == '__main__':
     from model import NativeModel, LMConfig
     from data import MockDataModule
 
+    from pytorch_lightning.callbacks import ModelSummary
+
     mock_config = LMConfig(
         vocab_size=53228,
-        hidden_size=128,
-        layer_num=1,
-        attention_heads=4,
-        seq_length=128,
+        hidden_size=3072,
+        layer_num=40,
+        attention_heads=24,
+        seq_length=2048,
         learning_rate=0.0001
     )
     core_model = NativeModel(mock_config)
     wrapper_model = LitModel(core_model)
     dm = MockDataModule(vocab_size=mock_config.vocab_size, seq_length=mock_config.seq_length)
-    trainer = pl.Trainer(gpus=-1 if torch.cuda.is_available() else None)
+    trainer = pl.Trainer(gpus=-1 if torch.cuda.is_available() else None, callbacks=[ModelSummary(max_depth=3)])
     trainer.fit(wrapper_model, dm)
