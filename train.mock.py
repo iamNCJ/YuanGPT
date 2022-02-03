@@ -1,5 +1,5 @@
 import torch
-from pytorch_lightning.strategies import DeepSpeedStrategy
+from pytorch_lightning.plugins import DeepSpeedPlugin
 
 from config import LMConfig
 from data import MockDataModule
@@ -61,5 +61,5 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy=DeepSpeedStrategy(deepspeed_config),
+        strategy=DeepSpeedPlugin(deepspeed_config),
     )

@@ -1,4 +1,4 @@
-pytorch-lightning==1.5.0
+pytorch-lightning~=1.5.9
 torch==1.10.0
 torchtyping==0.1.4
 jieba~=0.42.1
