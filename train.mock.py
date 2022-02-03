@@ -28,7 +28,6 @@ if __name__ == '__main__':
         amp_backend='apex',
         amp_level='O2',
         precision=16,
-        accelerator='ddp',
         max_epochs=1,
         strategy='ddp_sharded',
     )
