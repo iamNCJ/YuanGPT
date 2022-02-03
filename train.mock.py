@@ -33,10 +33,9 @@ if __name__ == '__main__':
         "zero_optimization": {
             "stage": 3,
             "offload_optimizer": True,
+            "offload_parameters": True,
             "contiguous_gradients": True,
             "overlap_comm": True,
-            "allgather_bucket_size": 2e8,
-            "reduce_bucket_size": 2e8,
         },
     }
 
