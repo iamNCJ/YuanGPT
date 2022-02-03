@@ -25,7 +25,7 @@ if __name__ == '__main__':
     pl_train(
         core_model, dm,
         gpus=-1 if torch.cuda.is_available() else None,
-        amp_backend='native',
+        amp_backend='apex',
         amp_level='O2',
         precision=16,
         accelerator='ddp',
