@@ -22,4 +22,13 @@ if __name__ == '__main__':
         batch_size=mock_config.batch_size,
         mock_data_size=100000
     )
-    pl_train(core_model, dm, gpus=-1 if torch.cuda.is_available() else None)
+    pl_train(
+        core_model, dm,
+        gpus=-1 if torch.cuda.is_available() else None,
+        amp_backend='native',
+        amp_level='O2',
+        precision=16,
+        accelerator='ddp',
+        max_epochs=1,
+        plugins='ddp_sharded',
+    )
