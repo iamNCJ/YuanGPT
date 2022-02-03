@@ -1,5 +1,3 @@
-# TODO: use jieba for splitting, use huggingface WordPieceTokenizer for tokenization, and dump into npy or torch file
-
 import collections
 
 import jieba
