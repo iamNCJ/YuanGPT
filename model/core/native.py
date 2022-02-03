@@ -3,15 +3,15 @@ import torch.nn as nn
 from torchtyping import TensorType, patch_typeguard
 from typeguard import typechecked
 
-from model.config import LMConfig
-from model.core.abstract import ABCModel
+from config import LMConfig
+from model.core.abstract import BaseModel
 from model.position_encoder import SinCosEncoding
 from model.transformer_block import StandardTransformerBlock
 
 patch_typeguard()
 
 
-class GenerativeLM(ABCModel):
+class GenerativeLM(BaseModel):
     # TODO: add mask
     def __init__(self, config: LMConfig):
         super().__init__()
@@ -39,8 +39,11 @@ class GenerativeLM(ABCModel):
         shift_labels = labels[..., 1:].contiguous()
         return self.loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
 
-    def optimizer(self) -> torch.optim.Optimizer:
+    def get_optimizer(self) -> torch.optim.Optimizer:
         return torch.optim.Adam(self.parameters(), lr=self.config.learning_rate)
+
+    def get_config(self) -> LMConfig:
+        return self.config
 
 
 if __name__ == '__main__':
@@ -50,7 +53,8 @@ if __name__ == '__main__':
         layer_num=6,
         attention_heads=8,
         seq_length=128,
-        learning_rate=0.001
+        learning_rate=0.001,
+        batch_size=32
     )
     model = GenerativeLM(mock_config)
     mock_input = torch.randint(0, 10, (4, 128))

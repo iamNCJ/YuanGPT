@@ -9,3 +9,4 @@ class LMConfig:
     seq_length: int
     vocab_size: int
     learning_rate: float
+    batch_size: int

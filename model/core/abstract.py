@@ -1,8 +1,10 @@
+from abc import abstractmethod
+
 import torch
 from torch import nn
 
 
-class ABCModel(nn.Module):
+class BaseModel(nn.Module):
     """
     Abstract class for generative language models.
     """
@@ -12,5 +14,8 @@ class ABCModel(nn.Module):
     def loss(self, x, y):
         ...
 
-    def optimizer(self) -> torch.optim.Optimizer:
+    def get_optimizer(self) -> torch.optim.Optimizer:
+        ...
+
+    def get_config(self):
         ...
