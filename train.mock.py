@@ -66,5 +66,6 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy=DeepSpeedPlugin(config=deepspeed_config, logging_batch_size_per_gpu=mock_config.batch_size),
+        strategy='deepspeed_stage_2_offload'
+        # DeepSpeedPlugin(config=deepspeed_config, logging_batch_size_per_gpu=mock_config.batch_size),
     )
