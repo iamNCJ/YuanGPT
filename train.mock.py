@@ -8,6 +8,8 @@ from trainer.lightning import pl_train
 
 if __name__ == '__main__':
     deepspeed_config = {
+        # "zero_allow_untested_optimizer": True,
+        "train_batch_size": 2,
         "bf16": {
             "enabled": True
         },
@@ -34,12 +36,12 @@ if __name__ == '__main__':
         },
         "zero_optimization": {
             "stage": 3,
-            "offload_optimizer": {
-                "device": "cpu",
-                "pin_memory": True,
-                "buffer_count": 4,
-                # "fast_init": False
-              },
+            # "offload_optimizer": {
+            #     "device": "cpu",
+            #     "pin_memory": True,
+            #     "buffer_count": 4,
+            #     # "fast_init": False
+            #   },
         },
     }
 
