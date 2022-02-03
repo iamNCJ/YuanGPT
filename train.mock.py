@@ -8,8 +8,6 @@ from trainer.lightning import pl_train
 
 if __name__ == '__main__':
     deepspeed_config = {
-        # "zero_allow_untested_optimizer": True,
-        "train_batch_size": 4,
         "bf16": {
             "enabled": True
         },
@@ -52,7 +50,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
-        batch_size=4,
+        batch_size=2,
     )
     core_model = NativeModel(mock_config)
     dm = MockDataModule(
