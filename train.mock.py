@@ -25,8 +25,7 @@ if __name__ == '__main__':
     pl_train(
         core_model, dm,
         gpus=-1 if torch.cuda.is_available() else None,
-        amp_backend='native',
         precision=16,
         max_epochs=1,
-        strategy='ddp_sharded',
+        strategy='deepspeed_stage_3',
     )
