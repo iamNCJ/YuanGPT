@@ -10,7 +10,7 @@ if __name__ == '__main__':
         vocab_size=53228,
         hidden_size=128,
         layer_num=4,
-        attention_heads=24,
+        attention_heads=4,
         seq_length=256,
         learning_rate=0.0001,
         batch_size=4,
