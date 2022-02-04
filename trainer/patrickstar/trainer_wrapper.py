@@ -7,6 +7,7 @@ from patrickstar.runtime import initialize_engine
 from patrickstar.utils import get_rank
 
 from model.core import HFModel
+from trainer.patrickstar.model_wrapper import PStarModel
 
 pstar_config = {
     "optimizer": {
@@ -35,7 +36,7 @@ pstar_config = {
 
 def train(config: LMConfig, data_module: pl.LightningDataModule):
     def model_func():
-        return HFModel(config)
+        return PStarModel(HFModel(config))
 
     model, optimizer = initialize_engine(
         model_func=model_func,
@@ -49,8 +50,7 @@ def train(config: LMConfig, data_module: pl.LightningDataModule):
     for data in tqdm(data_module.train_dataloader(), desc="Training"):
         optimizer.zero_grad()
         data = data.to(device)
-        logits = model(data)
-        loss = model.loss(logits, data)
+        loss = model(data)
         model.backward(loss)
         optimizer.step()
         tqdm.write(f"loss: {loss}")
