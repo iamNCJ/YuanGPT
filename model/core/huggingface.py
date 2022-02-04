@@ -19,8 +19,7 @@ class GenerativeLM(BaseModel):
             n_layer=config.layer_num,
             n_head=config.attention_heads,
             activation_function='relu',
-            n_inner=4 * config.hidden_size,
-            return_dict=False
+            n_inner=4 * config.hidden_size
         )
         with no_init_weights(_enable=True):
             self.model = GPT2LMHeadModel(gpt2_config)
@@ -28,7 +27,7 @@ class GenerativeLM(BaseModel):
 
     def forward(self, input_ids: TensorType["batch_size", "seq_length"]) \
             -> TensorType["batch_size", "seq_length", "vocab_size"]:
-        return self.model(input_ids)
+        return self.model(input_ids).logits
 
     def loss(
             self,
