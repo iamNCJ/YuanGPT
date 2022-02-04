@@ -48,7 +48,7 @@ if __name__ == '__main__':
     mock_config = LMConfig(
         vocab_size=53228,
         hidden_size=3072,
-        layer_num=40,
+        layer_num=24,
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
@@ -66,6 +66,6 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy='deepspeed_stage_2_offload'
+        strategy='deepspeed_stage_3'
         # DeepSpeedPlugin(config=deepspeed_config, logging_batch_size_per_gpu=mock_config.batch_size),
     )
