@@ -12,7 +12,6 @@ patch_typeguard()
 
 
 class GenerativeLM(BaseModel):
-    # TODO: add mask
     def __init__(self, config: LMConfig):
         super().__init__()
         self.config = config
@@ -32,7 +31,7 @@ class GenerativeLM(BaseModel):
     @typechecked
     def loss(
             self,
-            logits: TensorType["batch_size", "seq_length", "hidden_size"],
+            logits: TensorType["batch_size", "seq_length", "vocab_size"],
             labels: TensorType["batch_size", "seq_length"]
     ) -> TensorType:
         shift_logits = logits[..., :-1, :].contiguous()
