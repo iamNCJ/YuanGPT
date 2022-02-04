@@ -24,7 +24,7 @@ if __name__ == '__main__':
     )
     pl_train(
         core_model, dm,
-        gpus=4,
+        gpus=2,
         precision=16,
         max_epochs=1,
         strategy='ddp',
