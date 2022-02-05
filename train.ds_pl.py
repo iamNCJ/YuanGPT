@@ -10,7 +10,7 @@ if __name__ == '__main__':
     mock_config = LMConfig(
         vocab_size=53228,
         hidden_size=3072,
-        layer_num=24,
+        layer_num=40,
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
