@@ -1,5 +1,3 @@
-import torch
-
 from config import LMConfig
 from data import MockDataModule
 from model import HFModel
