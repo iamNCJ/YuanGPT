@@ -28,5 +28,5 @@ if __name__ == '__main__':
         precision=16,
         max_epochs=1,
         strategy='ddp',
-        num_nodes=4
+        num_nodes=2
     )
