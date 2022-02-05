@@ -25,6 +25,5 @@ if __name__ == '__main__':
         gpus=-1,
         precision=16,
         max_epochs=1,
-        strategy='ddp',
-        num_nodes=2
+        strategy='ddp'
     )
