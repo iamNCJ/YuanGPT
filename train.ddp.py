@@ -13,7 +13,7 @@ if __name__ == '__main__':
         attention_heads=4,
         seq_length=256,
         learning_rate=0.0001,
-        batch_size=4,
+        batch_size=6,
     )
     core_model = HFModel(mock_config)
     dm = MockDataModule(
@@ -28,5 +28,5 @@ if __name__ == '__main__':
         precision=16,
         max_epochs=1,
         strategy='ddp',
-        num_nodes=4
+        num_nodes=3
     )
