@@ -25,6 +25,6 @@ if __name__ == '__main__':
         gpus=-1,
         precision=16,
         max_epochs=1,
-        strategy='ddp',
+        strategy='ddp_shared',
         num_nodes=4
     )
