@@ -9,10 +9,10 @@ if __name__ == '__main__':
 
     mock_config = LMConfig(
         vocab_size=53228,
-        hidden_size=3072,
-        layer_num=40,
-        attention_heads=24,
-        seq_length=2048,
+        hidden_size=1024,
+        layer_num=20,
+        attention_heads=8,
+        seq_length=512,
         learning_rate=0.0001,
         batch_size=1,
     )
@@ -28,5 +28,5 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy='deepspeed_stage_3_offload'
+        strategy='deepspeed_stage_3'
     )
