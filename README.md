@@ -14,7 +14,7 @@ torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --
 ### DeepSpeed in PyTorch-Lightning
 
 ```sh
-torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 1 train.ds_pl.py
+OMP_NUM_THREADS=32 torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 1 train.ds_pl.py
 ```
 
 
