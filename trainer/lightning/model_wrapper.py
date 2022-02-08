@@ -11,9 +11,10 @@ class LitModel(pl.LightningModule):
     Pytorch Lightning Trainer Wrapper
     """
 
-    def __init__(self, model: BaseModel):
+    def __init__(self, model: BaseModel, use_deepspeed: bool = False):
         super().__init__()
         self.model = model
+        self.use_deepspeed = use_deepspeed
         self.save_hyperparameters(asdict(model.get_config()))
 
     def forward(self, x):
@@ -34,4 +35,7 @@ class LitModel(pl.LightningModule):
         return {'val_loss': avg_loss}
 
     def configure_optimizers(self):
+        if self.use_deepspeed:
+            from deepspeed.ops.adam import DeepSpeedCPUAdam
+            return DeepSpeedCPUAdam(self.parameters())
         return self.model.get_optimizer()
