@@ -14,7 +14,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
-        batch_size=1,
+        batch_size=10,
     )
     core_model = HFModel(mock_config)
     dm = MockDataModule(
@@ -23,8 +23,6 @@ if __name__ == '__main__':
         batch_size=mock_config.batch_size,
         mock_data_size=100000
     )
-    print(f'torch.backends.cuda.matmul.allow_tf32 = {torch.backends.cuda.matmul.allow_tf32}')
-    print(f'torch.backends.cudnn.allow_tf32 = {torch.backends.cudnn.allow_tf32}')
     pl_train(
         core_model, dm,
         use_deepspeed=True,

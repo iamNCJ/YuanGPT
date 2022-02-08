@@ -20,7 +20,8 @@ class GenerativeLM(BaseModel):
             n_head=config.attention_heads,
             activation_function='relu',
             n_inner=4 * config.hidden_size,
-            use_cache=False
+            use_cache=False,
+            use_bfloat16=True
         )
         with no_init_weights(_enable=True):
             self.model = GPT2LMHeadModel(gpt2_config)
