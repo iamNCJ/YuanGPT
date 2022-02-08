@@ -27,7 +27,7 @@ if __name__ == '__main__':
         core_model, dm,
         use_deepspeed=True,
         gpus=-1 if torch.cuda.is_available() else None,
-        # precision=16,
+        precision='bf16',
         max_epochs=1,
         strategy='deepspeed_stage_3_offload'
     )
