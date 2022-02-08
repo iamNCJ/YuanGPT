@@ -23,6 +23,7 @@ class GenerativeLM(BaseModel):
         )
         with no_init_weights(_enable=True):
             self.model = GPT2LMHeadModel(gpt2_config)
+            self.model.gradient_checkpointing_enable()
         self.loss_fct = nn.CrossEntropyLoss()
 
     def forward(self, input_ids: TensorType["batch_size", "seq_length"]) \
