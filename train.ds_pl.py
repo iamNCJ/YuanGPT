@@ -23,6 +23,8 @@ if __name__ == '__main__':
         batch_size=mock_config.batch_size,
         mock_data_size=100000
     )
+    print(f'torch.backends.cuda.matmul.allow_tf32 = {torch.backends.cuda.matmul.allow_tf32}')
+    print(f'torch.backends.cudnn.allow_tf32 = {torch.backends.cudnn.allow_tf32}')
     pl_train(
         core_model, dm,
         use_deepspeed=True,
