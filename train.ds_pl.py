@@ -19,6 +19,7 @@ if __name__ == '__main__':
     core_model = HFModel(mock_config)
     dm = WOSDataModule(
         batch_size=mock_config.batch_size,
+        processed_data_path='./data/web_of_science/processed_data.npz'
     )
     pl_train(
         core_model, dm,
