@@ -3,9 +3,13 @@ Generative Language Model Pretrained on Inspur's Yuan Dataset, codebase for ASC2
 
 ## Project Structure
 
-To simplify experiments on different distributed training frameworks, we decoupled the training code into `data`, `model` and `trainer` modules.
+To simplify experiments on different distributed training frameworks, we decoupled the training code into `config`, `data`, `model` and `trainer` modules.
 
 The idea of this decoupling is inspired by pytorch-lightning, however we decoupled it even further to make it more flexible when integrating with other frameworks.
+
+### `config` Module
+
+We put all hyperparameters and configurations into `config` module for better tracing and logging.
 
 ### `data` Module
 
@@ -13,11 +17,9 @@ We directly use `pytorch-lightning.LightningDataModule` since it's interface is 
 
 ### `model` Module
 
-Since most distributed training framework need to wrap the model before or after model initialization, and `pytorch-lightning.LightningModule` has
-already exposed some problem in integrating multiple frameworks simultaneously, we decide to further decouple this module into `BaseModel` class.
+Since most distributed training framework need to wrap the model before or after model initialization, and `pytorch-lightning.LightningModule` has already exposed some problem in integrating multiple frameworks simultaneously, we decide to further decouple this module into `BaseModel` class.
 
-The `BaseModel` directly inherits `nn.Module`, which is the compatible for most of the distributed training frameworks. All implementations of the
-language model are derived from `BaseModel` and maintain only the model config, the model structure, the forward method, the loss function and the optimizer.
+The `BaseModel` directly inherits `nn.Module`, which is the compatible for most of the distributed training frameworks. All implementations of the language model are derived from `BaseModel` and maintain only the model config, the model structure, the forward method, the loss function and the optimizer.
 
 Currently, implemented models include:
 - native model: written in native pytorch
@@ -25,8 +27,7 @@ Currently, implemented models include:
 
 ### `trainer` Module
 
-Now we put everything else like model initialization, training, validation and testing into `trainer` module. All training preparation and iterations are
-done here.
+Now we put everything else like model initialization, training, validation and testing into `trainer` module. All training preparation and iterations are done here.
 
 Currently, implemented trainers include:
 - PytorchLightning trainer: distributed training with pytorch-lightning, with deepspeed integration provided by the lightning team
