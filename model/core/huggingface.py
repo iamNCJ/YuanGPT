@@ -42,6 +42,3 @@ class GenerativeLM(BaseModel):
 
     def get_optimizer(self) -> torch.optim.Optimizer:
         return torch.optim.Adam(self.parameters(), lr=self.config.learning_rate)
-
-    def get_config(self) -> LMConfig:
-        return self.config

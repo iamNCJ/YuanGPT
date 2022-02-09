@@ -16,7 +16,7 @@ class LitModel(pl.LightningModule):
         super().__init__()
         self.model = model
         self.strategy = strategy
-        self.save_hyperparameters(asdict(model.get_config()))
+        self.save_hyperparameters(asdict(model.config))
 
     def forward(self, x):
         return self.model(x)
@@ -41,9 +41,9 @@ class LitModel(pl.LightningModule):
         # Do Adam on CPU when offloading
         if self.strategy.use_offload:
             from deepspeed.ops.adam import DeepSpeedCPUAdam
-            return DeepSpeedCPUAdam(self.parameters(), lr=self.model.get_config().learning_rate)
+            return DeepSpeedCPUAdam(self.parameters(), lr=self.model.config.learning_rate)
         # Use FusedAdam when ZeRO is on and offload is not used, which reduces optimizer state
         elif self.strategy.use_deepspeed_zero:
             from deepspeed.ops.adam import FusedAdam
-            return FusedAdam(self.parameters(), lr=self.model.get_config().learning_rate)
+            return FusedAdam(self.parameters(), lr=self.model.config.learning_rate)
         return self.model.get_optimizer()

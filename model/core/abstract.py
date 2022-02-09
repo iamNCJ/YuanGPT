@@ -1,11 +1,26 @@
+from abc import abstractmethod
+
 import torch
 from torch import nn
+
+from config import LMConfig
 
 
 class BaseModel(nn.Module):
     """
     Abstract class for generative language models.
     """
+
+    @property
+    @abstractmethod
+    def config(self) -> LMConfig:
+        ...
+
+    @config.setter
+    @abstractmethod
+    def config(self, val):
+        self.config = val
+
     def forward(self, x):
         """
         Forward method
@@ -24,7 +39,4 @@ class BaseModel(nn.Module):
         ...
 
     def get_optimizer(self) -> torch.optim.Optimizer:
-        ...
-
-    def get_config(self):
         ...
