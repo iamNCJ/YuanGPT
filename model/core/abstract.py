@@ -10,16 +10,17 @@ class BaseModel(nn.Module):
     """
     Abstract class for generative language models.
     """
+    _config: LMConfig
 
     @property
     @abstractmethod
     def config(self) -> LMConfig:
-        ...
+        return self._config
 
     @config.setter
     @abstractmethod
-    def config(self, val):
-        self.config = val
+    def config(self, config: LMConfig):
+        self._config = config
 
     def forward(self, x):
         """
