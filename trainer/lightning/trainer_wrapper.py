@@ -16,8 +16,8 @@ def train(
         **kwargs
 ):
     wrapper_model = LitModel(model, strategy=use_distributed)
-    # logger = NamedLogger(asdict(model.config))
-    trainer = pl.Trainer(callbacks=[ModelSummary(max_depth=3)], strategy=use_distributed, **kwargs)
+    logger = NamedLogger(asdict(model.config))
+    trainer = pl.Trainer(logger=logger, callbacks=[ModelSummary(max_depth=3)], strategy=use_distributed, **kwargs)
     trainer.fit(wrapper_model, data_module)
 
 
