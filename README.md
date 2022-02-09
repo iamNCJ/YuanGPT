@@ -1,5 +1,23 @@
 # YuanGenerativeLM
-Generative Language Model Pretrained on Inspur's Yuan Dataset
+Generative Language Model Pretrained on Inspur's Yuan Dataset, codebase for ASC22 supercomputing competition
+
+## Project Structure
+
+To simplify experiments on different distributed training frameworks, we decoupled the training code into `data`, `model` and `trainer` modules.
+
+The idea of this decoupling is inspired by pytorch-lightning, however we decoupled it even further to make it more flexible when integrating with other frameworks.
+
+### `data` Module
+
+We directly use `pytorch-lightning.LightningDataModule` since it's interface is well-designed and easy to use.
+
+### `model` Module
+
+Since most distributed training framework need to wrap the model before or after model initialization, and `pytorch-lightning.LightningModule` has
+already exposed some problem in integrating multiple frameworks simultaneously, we decide to further decouple this module into `BaseModel` class.
+
+The `BaseModel` directly inherits `nn.Module`, which is the compatible for most of the distributed training frameworks. All implementations of the
+language model are derived from `BaseModel` and maintain only the model config, the model structure, the forward method, the loss function and the optimizer.
 
 ## Distributed Launch
 
@@ -17,6 +35,7 @@ torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --
 OMP_NUM_THREADS=32 torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 1 train.ds_pl.py
 ```
 
+Note that `OMP_NUM_THREADS` is a must when offload is used, since Optimizer now runs on CPU. 
 
 ### Horovod in PyTorch-Lightning
 
@@ -26,9 +45,16 @@ horovodrun -np 2 python train.hvd_pl.py
 
 We still prefer to use `torchrun`
 
+### PatrickStar
+
+```sh
+torchrun --nnodes=1 --nproc_per_node=2 train.pstar.py
+```
 
 ## Docker Environment
 
 ```sh
 docker run -it --name pytorch --gpus all --privileged --ipc=host --network=host --ulimit memlock=-1 --ulimit stack=67108864 --device=/dev/infiniband -v $(pwd):/workspace registry.cn-hangzhou.aliyuncs.com/ncj/pytorch bash
 ```
+
+Check details in [Dockerfile](./Dockerfile)
