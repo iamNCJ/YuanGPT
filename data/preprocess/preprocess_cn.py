@@ -56,7 +56,47 @@ def do_tokenize():
                     pass
 
 
+def is_contain_chinese(check_str):
+    for ch in check_str:
+        if u'\u4e00' <= ch <= u'\u9fff':
+            return True
+    return False
+
+
+def test_inspur():
+    chars = '这是一个不在字典里的分词，jieba干的好事'
+    start = 0
+    sub_tokens = []
+    while start < len(chars):
+        end = len(chars)
+        cur_substr = None
+        while start < end:
+            substr = "".join(chars[start:end])
+            if is_contain_chinese(substr):
+                if substr in vocab:
+                    cur_substr = substr
+                    break
+            else:
+                if start > 0:
+                    substr = "##" + substr
+                if substr in vocab:
+                    cur_substr = substr
+                    break
+            end -= 1
+        if cur_substr is None:
+            sub_tokens.append('<unk>')
+            start += 1
+            continue
+        sub_tokens.append(cur_substr)
+        start = end
+
+    return sub_tokens
+
+
 if __name__ == '__main__':
-    res = load_vocab('./vocab.txt')
-    print(len(res))
-    do_tokenize()
+    vocab = load_vocab('./vocab.txt')
+    res = vocab
+    inspur_res = test_inspur()
+    print(inspur_res)
+    # print(len(res))
+    # do_tokenize()
