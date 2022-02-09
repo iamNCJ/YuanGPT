@@ -3,7 +3,7 @@ import torch
 from config import LMConfig
 from data import MockDataModule
 from model import HFModel
-from trainer.lightning import pl_train
+from trainer.lightning import pl_train, DistributedStrategy
 
 if __name__ == '__main__':
 
@@ -25,9 +25,8 @@ if __name__ == '__main__':
     )
     pl_train(
         core_model, dm,
-        use_deepspeed=True,
+        use_distributed=DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD,
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        strategy='deepspeed_stage_3_offload'
     )

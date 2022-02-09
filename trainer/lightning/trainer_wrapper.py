@@ -6,12 +6,18 @@ from pytorch_lightning.callbacks import ModelSummary
 from model import BaseModel
 from trainer.lightning.model_wrapper import LitModel
 from trainer.lightning.named_logger import NamedLogger
+from trainer.lightning.strategy import DistributedStrategy
 
 
-def train(model: BaseModel, data_module: pl.LightningDataModule, use_deepspeed: bool = False, **kwargs):
-    wrapper_model = LitModel(model, use_deepspeed=use_deepspeed)
+def train(
+        model: BaseModel,
+        data_module: pl.LightningDataModule,
+        use_distributed: DistributedStrategy = DistributedStrategy.NONE,
+        **kwargs
+):
+    wrapper_model = LitModel(model, strategy=use_distributed)
     logger = NamedLogger(asdict(model.get_config()))
-    trainer = pl.Trainer(logger=logger, callbacks=[ModelSummary(max_depth=3)], **kwargs)
+    trainer = pl.Trainer(logger=logger, callbacks=[ModelSummary(max_depth=3)], strategy=use_distributed, **kwargs)
     trainer.fit(wrapper_model, data_module)
 
 
