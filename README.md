@@ -19,7 +19,22 @@ already exposed some problem in integrating multiple frameworks simultaneously, 
 The `BaseModel` directly inherits `nn.Module`, which is the compatible for most of the distributed training frameworks. All implementations of the
 language model are derived from `BaseModel` and maintain only the model config, the model structure, the forward method, the loss function and the optimizer.
 
+Currently, implemented models include:
+- native model: written in native pytorch
+- huggingface model: written in HuggingFace's transformers
+
+### `trainer` Module
+
+Now we put everything else like model initialization, training, validation and testing into `trainer` module. All training preparation and iterations are
+done here.
+
+Currently, implemented trainers include:
+- PytorchLightning trainer: distributed training with pytorch-lightning, with deepspeed integration provided by the lightning team
+- PatrickStar Trainer
+
 ## Distributed Launch
+
+Below are examples of how to launch the training job on different distributed frameworks.
 
 ### DDP in PyTorch-Lightning
 
