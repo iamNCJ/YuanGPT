@@ -64,7 +64,10 @@ def is_contain_chinese(check_str):
 
 
 def test_inspur():
-    chars = '这是一个不在字典里的分词，jieba干的好事'
+    chars = '完全不在字典里的genshin impact原神，我就是提瓦特大陆的神'
+    tokenizer = BertWordPieceTokenizer(vocab='./vocab.txt')
+    res = tokenizer.encode(chars)
+    print(res.tokens)
     start = 0
     sub_tokens = []
     while start < len(chars):
