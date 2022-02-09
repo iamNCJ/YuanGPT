@@ -32,7 +32,7 @@ def load_vocab(vocab_file):
 
 
 def do_tokenize():
-    with open('../example_data/001.txt', 'r', encoding='utf-8') as f:
+    with open('example_data/001.txt', 'r', encoding='utf-8') as f:
         lines = f.readlines()
     tokenizer = BertWordPieceTokenizer(vocab='./vocab.txt')
     for line in tqdm(lines):
@@ -97,7 +97,7 @@ def test_inspur():
 
 
 if __name__ == '__main__':
-    vocab = load_vocab('./vocab.txt')
+    vocab = load_vocab('vocab.txt')
     res = vocab
     inspur_res = test_inspur()
     print(inspur_res)

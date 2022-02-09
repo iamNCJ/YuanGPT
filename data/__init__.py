@@ -1,1 +1,1 @@
-from .MockDataModule import MockDataModule
+from .mock import MockDataModule

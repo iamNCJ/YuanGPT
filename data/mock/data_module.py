@@ -6,6 +6,9 @@ from torch.utils.data import DataLoader
 
 
 class MockDataModule(pl.LightningDataModule):
+    """
+    Mock data module for testing. The data in this module is generated randomly.
+    """
     def __init__(
             self,
             vocab_size: int,
