@@ -27,9 +27,13 @@ class GenerativeLM(BaseModel):
             self.model.gradient_checkpointing_enable()
         self.loss_fct = nn.CrossEntropyLoss()
 
-    def forward(self, input_ids: TensorType["batch_size", "seq_length"]) \
+    def forward(self, input_ids: TensorType["batch_size", "seq_length"],
+                attention_masks: TensorType["batch_size", "seq_length"] = None) \
             -> TensorType["batch_size", "seq_length", "vocab_size"]:
-        return self.model(input_ids).logits
+        return self.model(
+            input_ids=input_ids,
+            attention_mask=attention_masks
+        ).logits
 
     def loss(
             self,

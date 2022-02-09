@@ -1,7 +1,7 @@
 import torch
 
 from config import LMConfig
-from data import MockDataModule
+from data import WOSDataModule
 from model import HFModel
 from trainer.lightning import pl_train, DistributedStrategy
 
@@ -17,11 +17,8 @@ if __name__ == '__main__':
         batch_size=18,
     )
     core_model = HFModel(mock_config)
-    dm = MockDataModule(
-        vocab_size=mock_config.vocab_size,
-        seq_length=mock_config.seq_length,
+    dm = WOSDataModule(
         batch_size=mock_config.batch_size,
-        mock_data_size=100000
     )
     pl_train(
         core_model, dm,
