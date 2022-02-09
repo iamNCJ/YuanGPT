@@ -15,6 +15,7 @@ def train(
         use_distributed: DistributedStrategy = DistributedStrategy.NONE,
         **kwargs
 ):
+    pl.seed_everything(42)
     wrapper_model = LitModel(model, strategy=use_distributed)
     logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(logger=logger, callbacks=[ModelSummary(max_depth=3)], strategy=use_distributed, **kwargs)
