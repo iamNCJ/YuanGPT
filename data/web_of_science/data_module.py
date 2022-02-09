@@ -32,7 +32,7 @@ class WOSDataModule(pl.LightningDataModule):
     def setup(self, stage: Optional[str] = None) -> None:
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
-            ids = torch.from_numpy(npz_data['id'])
+            ids = torch.from_numpy(npz_data['id']).type(torch.LongTensor)
             # attention_masks = torch.from_numpy(npz_data['attention_mask'])
             dataset = ids  # TensorDataset(ids)
             train_dataset, val_dataset = random_split(dataset,
