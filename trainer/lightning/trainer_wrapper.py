@@ -35,7 +35,8 @@ def train(
         logger=logger,
         log_every_n_steps=1,
         callbacks=[ModelSummary(max_depth=3)],
-        strategy=use_distributed, **kwargs
+        strategy=use_distributed.pl_strategy,
+        **kwargs
     )
     trainer.fit(wrapper_model, data_module)
 

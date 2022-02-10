@@ -5,14 +5,14 @@ class DistributedStrategy(str, Enum):
     """
     Enum for the different distributed strategies.
     """
-    NONE = None
-    DDP = 'ddp'
-    DDP_SHARDED = 'ddp_sharded'
-    DEEPSPEED_STAGE_1 = 'deepspeed_stage_1'
-    DEEPSPEED_STAGE_2 = 'deepspeed_stage_2'
-    DEEPSPEED_STAGE_3 = 'deepspeed_stage_3'
-    DEEPSPEED_STAGE_2_OFFLOAD = 'deepspeed_stage_2_offload'
-    DEEPSPEED_STAGE_3_OFFLOAD = 'deepspeed_stage_3_offload'
+    NONE = 0
+    DDP = 1
+    DDP_SHARDED = 2
+    DEEPSPEED_STAGE_1 = 3
+    DEEPSPEED_STAGE_2 = 4
+    DEEPSPEED_STAGE_3 = 5
+    DEEPSPEED_STAGE_2_OFFLOAD = 6
+    DEEPSPEED_STAGE_3_OFFLOAD = 7
 
     @property
     def use_offload(self):
@@ -32,3 +32,17 @@ class DistributedStrategy(str, Enum):
         return self in [DistributedStrategy.DEEPSPEED_STAGE_1,
                         DistributedStrategy.DEEPSPEED_STAGE_2,
                         DistributedStrategy.DEEPSPEED_STAGE_3]
+
+    @property
+    def pl_strategy(self) -> str:
+        mapping = {
+            DistributedStrategy.NONE: None,
+            DistributedStrategy.DDP: 'ddp',
+            DistributedStrategy.DDP_SHARDED: 'ddp_sharded',
+            DistributedStrategy.DEEPSPEED_STAGE_1: 'deepspeed_stage_1',
+            DistributedStrategy.DEEPSPEED_STAGE_2: 'deepspeed_stage_2',
+            DistributedStrategy.DEEPSPEED_STAGE_3: 'deepspeed_stage_3',
+            DistributedStrategy.DEEPSPEED_STAGE_2_OFFLOAD: 'deepspeed_stage_2_offload',
+            DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD: 'deepspeed_stage_3_offload'
+        }
+        return mapping[self]
