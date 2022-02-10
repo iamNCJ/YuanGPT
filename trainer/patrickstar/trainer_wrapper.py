@@ -34,7 +34,12 @@ pstar_config = {
 }
 
 
-def train(config: LMConfig, data_module: pl.LightningDataModule):
+def train(config: LMConfig, data_module: pl.LightningDataModule) -> None:
+    """
+    Do train using PatrickStar trainer
+    :param config: `LMConfig`
+    :param data_module: `pl.LightningDataModule`
+    """
     def model_func():
         return PStarModel(HFModel(config))
 
