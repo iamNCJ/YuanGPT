@@ -2,7 +2,7 @@ from typing import Optional
 
 import pytorch_lightning as pl
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 
 
 class MockDataModule(pl.LightningDataModule):
@@ -26,7 +26,7 @@ class MockDataModule(pl.LightningDataModule):
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None) -> None:
-        self.dataset = torch.randint(self.vocab_size, (self.data_size, self.seq_length))
+        self.dataset = TensorDataset(torch.randint(self.vocab_size, (self.data_size, self.seq_length)))
 
     def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
@@ -38,5 +38,5 @@ class MockDataModule(pl.LightningDataModule):
 if __name__ == '__main__':
     dm = MockDataModule(vocab_size=1000, seq_length=3072)
     dm.setup()
-    d = next(iter(dm.train_dataloader()))
+    [d] = next(iter(dm.train_dataloader()))
     print(d.shape)

@@ -49,8 +49,8 @@ def train(config: LMConfig, data_module: pl.LightningDataModule):
     data_module.setup()
     for data in tqdm(data_module.train_dataloader(), desc="Training"):
         optimizer.zero_grad()
-        data = data.to(device)
-        loss = model(data)
+        data = [d.to(device) for d in data]
+        loss = model(*data)
         model.backward(loss)
         optimizer.step()
         tqdm.write(f"loss: {loss}")

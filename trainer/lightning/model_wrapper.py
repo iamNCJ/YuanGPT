@@ -23,14 +23,16 @@ class LitModel(pl.LightningModule):
         return self.model(*args)
 
     def training_step(self, batch, batch_idx):
-        y_hat = self.forward(batch)
-        loss = self.model.loss(y_hat, batch)
+        # batch = [input_ids, attention_masks(optional)]
+        y_hat = self.forward(*batch)
+        loss = self.model.loss(y_hat, batch[0])
         self.log('train_loss', loss)
         return {'loss': loss}
 
     def validation_step(self, batch, batch_idx):
-        y_hat = self.forward(batch)
-        loss = self.model.loss(y_hat, batch)
+        # batch = [input_ids, attention_masks(optional)]
+        y_hat = self.forward(*batch)
+        loss = self.model.loss(y_hat, batch[0])
         return {'val_loss': loss}
 
     def validation_epoch_end(self, outputs):
