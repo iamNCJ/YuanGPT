@@ -24,7 +24,8 @@ class GenerativeLM(BaseModel):
         self.loss_fct = nn.CrossEntropyLoss()
 
     @typechecked
-    def forward(self, input_ids: TensorType["batch_size", "seq_length"]) \
+    def forward(self, input_ids: TensorType["batch_size", "seq_length"],
+                attention_masks: TensorType["batch_size", "seq_length"], *args) \
             -> TensorType["batch_size", "seq_length", "vocab_size"]:
         return self.model(input_ids)
 

@@ -29,6 +29,7 @@ if __name__ == '__main__':
         batch_size=512,
         remove_columns=['label', 'input_data', 'label_level_1', 'label_level_2']
     )
+    # tokenized_data.save_to_disk('./preprocessed_data/')  # File too large
     ids = tokenized_data['id']
     attention_masks = tokenized_data['attention_mask']
     np.savez_compressed('./processed_data.npz', id=np.asarray(ids), attention_mask=np.asarray(attention_masks))

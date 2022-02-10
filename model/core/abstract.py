@@ -22,11 +22,12 @@ class BaseModel(nn.Module):
     def config(self, config: LMConfig):
         self._config = config
 
-    def forward(self, x):
+    def forward(self, input_ids, attention_mask=None, *args):
         """
         Forward method
-        :param x: input ids
-        :return: logits
+        :param input_ids: tensor
+        :param attention_mask: tensor
+        :return: logits, tensor
         """
         ...
 
