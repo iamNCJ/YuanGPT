@@ -1,7 +1,7 @@
 import torch
 
 from config import LMConfig
-from data import WOSDataModule
+from data import YuanDataModule
 from model import HFModel
 from trainer.lightning import pl_train, DistributedStrategy
 
@@ -17,9 +17,9 @@ if __name__ == '__main__':
         batch_size=18,
     )
     core_model = HFModel(mock_config)
-    dm = WOSDataModule(
+    dm = YuanDataModule(
         batch_size=mock_config.batch_size,
-        processed_data_path='./data/web_of_science/processed_yuan.npz'
+        processed_data_path='./data/yuan/processed_data.npz'
     )
     pl_train(
         core_model, dm,
