@@ -1,7 +1,7 @@
 from config import LMConfig
 from data import MockDataModule
 from model import HFModel
-from trainer.lightning import pl_train
+from trainer.lightning import pl_train, DistributedStrategy
 
 if __name__ == '__main__':
     mock_config = LMConfig(
@@ -24,5 +24,6 @@ if __name__ == '__main__':
         core_model, dm,
         gpus=1,
         precision=16,
-        max_epochs=1
+        max_epochs=1,
+        use_distributed=DistributedStrategy.DDP_SHARDED
     )
