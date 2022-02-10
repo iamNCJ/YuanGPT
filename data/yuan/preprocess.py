@@ -10,7 +10,8 @@ from typing import List
 from tokenizers import Tokenizer, NormalizedString, PreTokenizedString
 from tokenizers.models import ChineseWordPiece
 
-from datasets import load_dataset
+from datasets import load_dataset, set_caching_enabled
+set_caching_enabled(False)
 
 from functools import partial
 
@@ -89,7 +90,8 @@ if __name__ == '__main__':
         map_func,
         num_proc=args.workers,
         batched=True,
-        batch_size=512
+        batch_size=512,
+        keep_in_memory=True
     )
     # tokenized_data.save_to_disk('./preprocessed_data/')  # File too large
     ids = tokenized_data['id']
