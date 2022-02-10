@@ -22,6 +22,7 @@ class WOSDataModule(pl.LightningDataModule):
             batch_size: int = 32,
             num_workers: int = 8,
             processed_data_path: str = './processed_data.npz',
+            drop_attention_mask: bool = True,
             pin_memory: bool = False
     ):
         super().__init__()
@@ -29,14 +30,18 @@ class WOSDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.processed_data_path = processed_data_path
         self.pin_memory = pin_memory
+        self.drop_attention_mask = drop_attention_mask
         self.dataset: Optional[WOSDataset] = None
 
     def setup(self, stage: Optional[str] = None) -> None:
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
             ids = torch.from_numpy(npz_data['id']).type(torch.LongTensor)
-            attention_masks = torch.from_numpy(npz_data['attention_mask']).type(torch.LongTensor)
-            dataset = TensorDataset(ids)
+            if not self.drop_attention_mask:
+                attention_masks = torch.from_numpy(npz_data['attention_mask']).type(torch.LongTensor)
+                dataset = TensorDataset(ids, attention_masks)
+            else:
+                dataset = TensorDataset(ids)
             train_dataset, val_dataset = random_split(
                 dataset,
                 [int(0.8 * len(dataset)), len(dataset) - int(0.8 * len(dataset))]
