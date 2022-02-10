@@ -5,6 +5,7 @@ import torch
 
 from model import BaseModel
 from trainer.lightning.strategy import DistributedStrategy
+from util import MemTracker
 
 
 class LitModel(pl.LightningModule):
@@ -12,10 +13,13 @@ class LitModel(pl.LightningModule):
     Pytorch Lightning Trainer Wrapper
     """
 
-    def __init__(self, model: BaseModel, strategy: DistributedStrategy):
+    def __init__(self, model: BaseModel, strategy: DistributedStrategy, profile: bool = False):
         super().__init__()
         self.model = model
         self.strategy = strategy
+        self.profile = profile
+        if self.profile:
+            self.gpu_mem_tracker = MemTracker()
         self.save_hyperparameters(asdict(model.config))
 
     def forward(self, *args):
@@ -24,8 +28,14 @@ class LitModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         # batch = [input_ids, attention_masks(optional)]
+        if self.profile:
+            self.gpu_mem_tracker.track()
         y_hat = self.forward(*batch)
+        if self.profile:
+            self.gpu_mem_tracker.track()
         loss = self.model.loss(y_hat, batch[0])
+        if self.profile:
+            self.gpu_mem_tracker.track()
         self.log('train_loss', loss)
         return {'loss': loss}
 
