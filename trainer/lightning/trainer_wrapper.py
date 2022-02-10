@@ -43,7 +43,7 @@ def train(
     logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(
         logger=logger,
-        log_every_n_steps=2,
+        log_every_n_steps=50,
         callbacks=[ModelSummary(max_depth=3)],
         strategy=use_distributed, **kwargs
     )
