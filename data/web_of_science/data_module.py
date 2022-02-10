@@ -22,7 +22,7 @@ class WOSDataModule(pl.LightningDataModule):
             batch_size: int = 32,
             num_workers: int = 8,
             processed_data_path: str = './processed_data.npz',
-            pin_memory: bool = True
+            pin_memory: bool = False
     ):
         super().__init__()
         self.batch_size = batch_size
