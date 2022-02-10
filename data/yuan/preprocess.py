@@ -29,10 +29,8 @@ def get_args():
     group.add_argument("--output_file", default="./processed_data.npz", type=str)
 
     group = parser.add_argument_group(title='runtime')
-    group.add_argument('--workers', type=int, default=32,
+    group.add_argument('--workers', type=int, default=16,
                        help='Number of worker processes to launch')
-    group.add_argument('--log_interval', type=int, default=10000,
-                       help='Interval between progress updates')
 
     args = parser.parse_args()
     args.keep_empty = False
@@ -91,7 +89,7 @@ if __name__ == '__main__':
         map_func,
         num_proc=args.workers,
         batched=True,
-        batch_size=16
+        batch_size=512
     )
     # tokenized_data.save_to_disk('./preprocessed_data/')  # File too large
     ids = tokenized_data['id']
