@@ -1,3 +1,4 @@
+import logging
 from dataclasses import asdict
 
 import pytorch_lightning as pl
@@ -13,12 +14,35 @@ def train(
         model: BaseModel,
         data_module: pl.LightningDataModule,
         use_distributed: DistributedStrategy = DistributedStrategy.NONE,
+        seed: int = 42,
         **kwargs
-):
-    pl.seed_everything(42)
+) -> None:
+    """
+    Do train using Pytorch-Lightning trainer
+    :param model: `BaseModel` instance
+    :param data_module: `pl.LightningDataModule` instance
+    :param use_distributed: `DistributedStrategy` enum
+    :param seed: random seed
+    :param kwargs: other kwargs for `pl.Trainer`
+    """
+
+    # set seed
+    pl.seed_everything(seed)
+
+    # config output log
+    logger = logging.getLogger('lightning')
+    logger.info(...)
+    logger.debug(...)
+
+    # do train
     wrapper_model = LitModel(model, strategy=use_distributed)
     logger = NamedLogger(asdict(model.config))
-    trainer = pl.Trainer(logger=logger, callbacks=[ModelSummary(max_depth=3)], strategy=use_distributed, **kwargs)
+    trainer = pl.Trainer(
+        logger=logger,
+        log_every_n_steps=1,
+        callbacks=[ModelSummary(max_depth=3)],
+        strategy=use_distributed, **kwargs
+    )
     trainer.fit(wrapper_model, data_module)
 
 
