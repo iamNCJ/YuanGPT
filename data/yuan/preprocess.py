@@ -61,11 +61,7 @@ class JiebaPreTokenizer:
 
 
 def tokenize(_tokenizer, x):
-    line = x['text']
-    # handle empty line
-    if line.strip() == '':
-        return
-    res = _tokenizer.encode_batch(line)
+    res = _tokenizer.encode_batch(x['text'])
     return {
         'id': [r.ids for r in res],
         'attention_mask': [r.attention_mask for r in res]

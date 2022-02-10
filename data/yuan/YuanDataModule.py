@@ -15,7 +15,7 @@ class YuanDataset:
 
 class YuanDataModule(pl.LightningDataModule):
     """
-    Data module for Web of Science dataset.
+    Data module for Inspur Yuan dataset.
     """
     def __init__(
             self,
