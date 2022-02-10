@@ -13,11 +13,11 @@ class LitModel(pl.LightningModule):
     Pytorch Lightning Trainer Wrapper
     """
 
-    def __init__(self, model: BaseModel, strategy: DistributedStrategy, profile: bool = False):
+    def __init__(self, model: BaseModel, strategy: DistributedStrategy, profile_mem: bool = False):
         super().__init__()
         self.model = model
         self.strategy = strategy
-        self.profile = profile
+        self.profile = profile_mem
         if self.profile:
             self.gpu_mem_tracker = MemTracker()
         self.save_hyperparameters(asdict(model.config))

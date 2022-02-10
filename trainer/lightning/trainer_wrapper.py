@@ -14,6 +14,7 @@ def train(
         data_module: pl.LightningDataModule,
         use_distributed: DistributedStrategy = DistributedStrategy.NONE,
         seed: int = 42,
+        profile_mem: bool = False,
         **kwargs
 ) -> None:
     """
@@ -22,6 +23,7 @@ def train(
     :param data_module: `pl.LightningDataModule` instance
     :param use_distributed: `DistributedStrategy` enum
     :param seed: random seed
+    :param profile_mem: whether to use gpu mem tracer to profile gpu memory usage
     :param kwargs: other kwargs for `pl.Trainer`
     """
 
@@ -29,7 +31,7 @@ def train(
     pl.seed_everything(seed)
 
     # do train
-    wrapper_model = LitModel(model, strategy=use_distributed)
+    wrapper_model = LitModel(model, strategy=use_distributed, profile_mem=profile_mem)
     logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(
         logger=logger,
