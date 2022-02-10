@@ -1,105 +1,97 @@
-import collections
+import argparse
+import time
+import os
 
 import jieba
+jieba.disable_parallel()
+
+from typing import List
+from tokenizers import Tokenizer, NormalizedString, PreTokenizedString
+from tokenizers.pre_tokenizers import PreTokenizer
+from tokenizers.models import ChineseWordPiece
+
+from datasets import load_dataset
+
+from functools import partial
+
 import numpy as np
-from tqdm import tqdm
-from tokenizers.implementations import BertWordPieceTokenizer
 
+def get_args():
+    parser = argparse.ArgumentParser()
+    group = parser.add_argument_group(title='input data')
+    group.add_argument('--input', default="./example_data", type=str, help='Path to input TXT')
 
-def convert_to_unicode(text):
-    """Converts `text` to Unicode (if it's not already), assuming utf-8 input."""
-    if isinstance(text, str):
-        return text
-    elif isinstance(text, bytes):
-        return text.decode("utf-8", "ignore")
-    else:
-        raise ValueError("Unsupported string type: %s" % (type(text)))
+    group = parser.add_argument_group(title='vocab path')
+    group.add_argument('--vocab_path', default="./", type=str, help='Path of vocab_file')
 
+    group = parser.add_argument_group(title='output data')
+    group.add_argument("--output_file", default="./processed_data.npz", type=str)
 
-def load_vocab(vocab_file):
-    """Loads a vocabulary file into a dictionary."""
-    vocab = collections.OrderedDict()
-    index = 0
-    with open(vocab_file, "r", encoding='utf-8') as reader:
-        while True:
-            token = convert_to_unicode(reader.readline())
-            if not token:
-                break
-            token = token.strip()
-            vocab[token] = index
-            index += 1
-    return vocab
+    group = parser.add_argument_group(title='runtime')
+    group.add_argument('--workers', type=int, default=8,
+                       help='Number of worker processes to launch')
+    group.add_argument('--log_interval', type=int, default=10000,
+                       help='Interval between progress updates')
 
+    args = parser.parse_args()
+    args.keep_empty = False
 
-def do_tokenize():
-    with open('example_data/001.txt', 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    tokenizer = BertWordPieceTokenizer(vocab='./vocab.txt')
-    for line in tqdm(lines):
-        line = line.strip()
-        if line != '':
-            _res = np.zeros(shape=(3072, ), dtype=np.int32)
-            i = 0
-            for x in jieba.cut(line, cut_all=False):
-                # _x = tokenizer.token_to_id(x)
-                # if _x is not None:
-                #     _res[i] = _x
-                #     i += 1
-                # if i == 3072:
-                #     break
-                try:
-                    _res[i] = res[x]
-                    i += 1
-                    if i == 3072:
-                        break
-                except KeyError:
-                    pass
+    args.rank = 0
+    args.make_vocab_size_divisible_by = 128
 
+    return args
 
-def is_contain_chinese(check_str):
-    for ch in check_str:
-        if u'\u4e00' <= ch <= u'\u9fff':
-            return True
-    return False
+def getfiles(path,ex_str='py'):
+    file_list=[]
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            if (len(ex_str) > 0 and ex_str in name ):
+                continue
+            file_list.append(os.path.join(root, name))
+    return file_list
 
+class JiebaPreTokenizer:
+    def jieba_split(self, i: int, normalized_string: NormalizedString) -> List[NormalizedString]:
+        return [normalized_string[w[1] : w[2]] for w in jieba.tokenize(str(normalized_string))]
 
-def test_inspur():
-    chars = '完全不在字典里的genshin impact原神，我就是提瓦特大陆的神'
-    tokenizer = BertWordPieceTokenizer(vocab='./vocab.txt')
-    res = tokenizer.encode(chars)
-    print(res.tokens)
-    start = 0
-    sub_tokens = []
-    while start < len(chars):
-        end = len(chars)
-        cur_substr = None
-        while start < end:
-            substr = "".join(chars[start:end])
-            if is_contain_chinese(substr):
-                if substr in vocab:
-                    cur_substr = substr
-                    break
-            else:
-                if start > 0:
-                    substr = "##" + substr
-                if substr in vocab:
-                    cur_substr = substr
-                    break
-            end -= 1
-        if cur_substr is None:
-            sub_tokens.append('<unk>')
-            start += 1
-            continue
-        sub_tokens.append(cur_substr)
-        start = end
+    def pre_tokenize(self, pretok: PreTokenizedString):
+        pretok.split(self.jieba_split)
 
-    return sub_tokens
-
+def tokenize(_tokenizer, x):
+    res = _tokenizer.encode_batch(x['text'])
+    return {
+        'id': [r.ids for r in res],
+        'attention_mask': [r.attention_mask for r in res]
+    }
 
 if __name__ == '__main__':
-    vocab = load_vocab('vocab.txt')
-    res = vocab
-    inspur_res = test_inspur()
-    print(inspur_res)
-    # print(len(res))
-    # do_tokenize()
+    args = get_args()
+    startup_start = time.time()
+
+    print("Opening", args.input)
+    fin_list = getfiles(args.input, 'git')
+    print("fin_list: ", fin_list)
+
+    tokenizer = Tokenizer(ChineseWordPiece(vocab=os.path.join(args.vocab_path, 'vocab.txt'), unk_token='<unk>'))
+    jieba_pre_tokenizer = JiebaPreTokenizer()
+#    tokenizer.pre_tokenizer = PreTokenizer.custom(jieba_pre_tokenizer)
+
+    dataset = load_dataset('text', data_files={'train': fin_list})
+
+    map_func = partial(tokenize, tokenizer)
+    print(dataset)
+    print(dataset['train'])
+    tokenized_data = dataset['train'].map(
+        map_func,
+        num_proc=args.workers,
+        batched=True,
+        batch_size=16,
+        #remove_columns=['label', 'input_data', 'label_level_1', 'label_level_2']
+    )
+    # tokenized_data.save_to_disk('./preprocessed_data/')  # File too large
+    ids = tokenized_data['id']
+    attention_masks = tokenized_data['attention_mask']
+    np.savez_compressed(args.output_file, id=np.asarray(ids), attention_mask=np.asarray(attention_masks))
+    print('Saved processed data to ', args.output_file)
+
+    print("Total time to used:", time.time() - startup_start)
