@@ -18,6 +18,9 @@ class LitModel(pl.LightningModule):
         self.strategy = strategy
         self.save_hyperparameters(asdict(model.config))
 
+    def on_train_start(self):
+        self.logger.log_hyperparams(self.hparams)
+
     def forward(self, *args):
         # input_ids, attention_masks(optional)
         return self.model(*args)
