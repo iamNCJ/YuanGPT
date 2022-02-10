@@ -1,4 +1,3 @@
-import logging
 from dataclasses import asdict
 
 import pytorch_lightning as pl
@@ -29,21 +28,12 @@ def train(
     # set seed
     pl.seed_everything(seed)
 
-    # config output log
-    logging.basicConfig(
-        format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-        datefmt='%H:%M:%S',
-        level=logging.DEBUG
-    )
-    logger = logging.getLogger('lightning')
-    logger.info('Configured lightning logger')
-
     # do train
     wrapper_model = LitModel(model, strategy=use_distributed)
     logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(
         logger=logger,
-        log_every_n_steps=50,
+        log_every_n_steps=1,
         callbacks=[ModelSummary(max_depth=3)],
         strategy=use_distributed, **kwargs
     )
