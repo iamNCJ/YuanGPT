@@ -25,5 +25,5 @@ if __name__ == '__main__':
         gpus=1,
         precision=16,
         max_epochs=1,
-        use_distributed=DistributedStrategy.DDP_SHARDED
+        use_distributed=DistributedStrategy.DEEPSPEED_STAGE_3
     )
