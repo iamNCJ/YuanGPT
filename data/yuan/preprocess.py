@@ -90,9 +90,11 @@ if __name__ == '__main__':
         map_func,
         num_proc=args.workers,
         batched=True,
-        batch_size=512,
-        keep_in_memory=True
+        batch_size=64,
+        keep_in_memory=True,
+        load_from_cache_file=False
     )
+    print('Processed in %.2fs' % (time.time() - startup_start))
     # tokenized_data.save_to_disk('./preprocessed_data/')  # File too large
     ids = tokenized_data['id']
     attention_masks = tokenized_data['attention_mask']
