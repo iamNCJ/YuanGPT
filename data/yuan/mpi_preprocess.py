@@ -25,6 +25,7 @@ jieba_pre_tokenizer = JiebaPreTokenizer()
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
+size = comm.size
 
 if rank == 0:
     lines = []
@@ -35,6 +36,8 @@ if rank == 0:
                 break
             if line.strip() != '':
                 lines.append(line)
+    avg_len = len(lines) // size
+    lines = [lines[r * avg_len: (r + 1) * avg_len] for r in range(size)]
 else:
     lines = None
 
