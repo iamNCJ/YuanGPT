@@ -9,6 +9,7 @@ jieba.disable_parallel()
 from typing import List
 from tokenizers import Tokenizer, NormalizedString, PreTokenizedString
 from tokenizers.models import ChineseWordPiece
+from tokenizers.pre_tokenizers import BertPreTokenizer
 
 from datasets import load_dataset, set_caching_enabled
 set_caching_enabled(False)
@@ -76,6 +77,7 @@ if __name__ == '__main__':
     print("fin_list: ", fin_list)
 
     tokenizer = Tokenizer(ChineseWordPiece(vocab=os.path.join(args.vocab_path, 'vocab.txt'), unk_token='<unk>'))
+    tokenizer.pre_tokenizer = BertPreTokenizer()
     tokenizer.enable_padding(pad_id=53225, pad_token="[PAD]", length=2048)
     tokenizer.enable_truncation(max_length=2048)
     jieba_pre_tokenizer = JiebaPreTokenizer()
@@ -94,11 +96,14 @@ if __name__ == '__main__':
         keep_in_memory=True,
         load_from_cache_file=False
     )
-    print('Processed in %.2fs' % (time.time() - startup_start))
+    print('[Stage 1] Processed in %.2fs' % (time.time() - startup_start))
     # tokenized_data.save_to_disk('./preprocessed_data/')  # File too large
     ids = tokenized_data['id']
     attention_masks = tokenized_data['attention_mask']
-    np.savez_compressed(args.output_file, id=np.asarray(ids), attention_mask=np.asarray(attention_masks))
+    np.savez_compressed(args.output_file,
+                        id=np.asarray(ids, dtype=np.uint16),
+                        attention_mask=np.asarray(attention_masks, dtype=np.uint16)
+                        )
     print(np.asarray(ids).shape)
     print('Saved processed data to ', args.output_file)
 
