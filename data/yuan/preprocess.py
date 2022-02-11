@@ -81,7 +81,7 @@ if __name__ == '__main__':
     jieba_pre_tokenizer = JiebaPreTokenizer()
     #    tokenizer.pre_tokenizer = PreTokenizer.custom(jieba_pre_tokenizer)
 
-    dataset = load_dataset('text', data_files={'train': fin_list})
+    dataset = load_dataset('text', data_files={'train': fin_list}, keep_in_memory=True)
 
     map_func = partial(tokenize, tokenizer)
     print(dataset)
