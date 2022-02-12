@@ -14,7 +14,7 @@ class MockDataModule(pl.LightningDataModule):
             vocab_size: int,
             seq_length: int,
             batch_size: int = 32,
-            mock_data_size: int = 100,
+            mock_data_size: int = 500000,
             num_workers: int = 8
     ):
         super().__init__()
