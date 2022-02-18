@@ -26,7 +26,7 @@ if __name__ == '__main__':
         use_distributed=DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD,
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
-        max_epochs=1,
         profiler="pytorch",
-        max_steps=50
+        max_steps=50,
+        limit_train_batches=50
     )
