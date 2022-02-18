@@ -25,7 +25,7 @@ if __name__ == '__main__':
         batch_size=mock_config.batch_size,
         vocab_size=mock_config.vocab_size,
         seq_length=mock_config.seq_length,
-        mock_data_size=50 * 4 * 18
+        mock_data_size=15 * 4 * 18
     )
     pl_train(
         core_model, dm,
