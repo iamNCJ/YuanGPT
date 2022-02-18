@@ -70,13 +70,13 @@ torchrun --nnodes=1 --nproc_per_node=2 train.pstar.py
 ## Run Profile
 
 ```sh
-nvprof --profile-from-start off -o xxx.nvprof -- OMP_NUM_THREADS=32 torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 1 train.ds_pl.py
+OMP_NUM_THREADS=32 nsys profile -o cpu_adam torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 0 train.ds_pl.py
 ```
 
 ## Docker Environment
 
 ```sh
-docker run -it --name pytorch --gpus all --privileged --ipc=host --network=host --ulimit memlock=-1 --ulimit stack=67108864 --device=/dev/infiniband -v $(pwd):/workspace registry.cn-hangzhou.aliyuncs.com/ncj/pytorch bash
+docker run -it --name pytorch --gpus all --privileged --cap-add=SYS_ADMIN --ipc=host --network=host --ulimit memlock=-1 --ulimit stack=67108864 --device=/dev/infiniband -v $(pwd):/workspace registry.cn-hangzhou.aliyuncs.com/ncj/pytorch bash
 ```
 
 Check details in [Dockerfile](./Dockerfile)

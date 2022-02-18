@@ -27,5 +27,6 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        profiler="pytorch"
+        profiler="pytorch",
+        max_steps=50
     )
