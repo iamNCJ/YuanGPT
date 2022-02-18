@@ -2,7 +2,6 @@ from dataclasses import asdict
 
 import pytorch_lightning as pl
 import torch
-from torch.optim._multi_tensor import Adam
 
 from model import BaseModel
 from trainer.lightning.strategy import DistributedStrategy
@@ -54,6 +53,8 @@ class LitModel(pl.LightningModule):
     def configure_optimizers(self):
         # Do Adam on CPU when offloading
         if self.strategy.use_offload:
+            from torch.optim import Adam
+            # from torch.optim._multi_tensor import Adam
             return Adam(self.model.parameters(), lr=self.model.config.learning_rate)
             # from deepspeed.ops.adam import DeepSpeedCPUAdam
             # return DeepSpeedCPUAdam(self.parameters(), lr=self.model.config.learning_rate)
