@@ -67,6 +67,12 @@ We still prefer to use `torchrun`
 torchrun --nnodes=1 --nproc_per_node=2 train.pstar.py
 ```
 
+## Run Profile
+
+```sh
+nvprof --profile-from-start off -o xxx.nvprof -- OMP_NUM_THREADS=32 torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 1 train.ds_pl.py
+```
+
 ## Docker Environment
 
 ```sh
