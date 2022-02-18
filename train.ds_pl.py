@@ -28,5 +28,5 @@ if __name__ == '__main__':
         precision=16,
         profiler="pytorch",
         max_steps=50,
-        limit_train_batches=50
+        limit_train_batches=0.001
     )
