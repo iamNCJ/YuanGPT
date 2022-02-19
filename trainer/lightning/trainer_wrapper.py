@@ -37,7 +37,6 @@ def train(
         log_every_n_steps=1,
         enable_model_summary=False,
         strategy=use_distributed.pl_strategy,
-        accumulate_grad_batches=1,
         **kwargs
     )
     trainer.fit(wrapper_model, data_module)
