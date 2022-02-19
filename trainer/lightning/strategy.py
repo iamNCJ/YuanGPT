@@ -9,6 +9,19 @@ custom_deepspeed_config = {
     # Do not set `gradient_accumulation_steps` in the DeepSpeed config as this will be set
     # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.
 
+    # # fp16
+    # "fp16": {
+    #     "enabled": True,
+    #     "loss_scale": 0,
+    #     "initial_scale_power": 32,
+    #     "loss_scale_window": 1000,
+    #     "hysteresis": 2,
+    #     "min_loss_scale": 1
+    # },
+    "bf16": {
+        "enabled": True
+    },
+
     # ZeRO
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
