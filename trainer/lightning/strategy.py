@@ -4,7 +4,7 @@ from pytorch_lightning.plugins import DeepSpeedPlugin
 
 custom_deepspeed_config = {
     # Batch Size
-    "train_micro_batch_size_per_gpu": "auto",
+    "train_micro_batch_size_per_gpu": 1,
     # "gradient_accumulation_steps": 1,
     # Do not set `gradient_accumulation_steps` in the DeepSpeed config as this will be set
     # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.
@@ -25,14 +25,14 @@ custom_deepspeed_config = {
     # ZeRO
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
-        "stage": [2, 3],
-        "offload_parameters": True,  # Enable Offloading parameters to the host CPU
+        "stage": 2,
+        "offload_parameters": False,  # Enable Offloading parameters to the host CPU
         "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
-        "offload_param": {
-            "device": "cpu",
-            "pin_memory": False
-        },
+        # "offload_param": {
+        #     "device": "cpu",
+        #     "pin_memory": False
+        # },
         "offload_optimizer": {
             "device": "cpu",
             "pin_memory": False,
@@ -51,21 +51,6 @@ custom_deepspeed_config = {
         "enabled": True,
         "output_path": "logs/ds_logs/",
         "job_name": f"train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
-    },
-
-    # Auto-tuning
-    "autotuning": {
-        "enabled": True,
-        "overwrite": False,
-        "metric": "throughput",
-        "start_profile_step": 3,
-        "end_profile_step": 5,
-        "fast": False,
-        "mp_size": 1,
-        "tuner_type": "model_based",
-        "tuner_early_stopping": 5,
-        "num_tuning_micro_batch_sizes": 19,
-        "tuner_num_trials": 50,
     },
 
     # Profiling
