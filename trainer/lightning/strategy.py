@@ -33,7 +33,7 @@ custom_deepspeed_config = {
         "dump_state": True,
     },
     "activation_checkpointing": {
-        "partition_activations": False,
+        "partition_activations": True,
         "cpu_checkpointing": True,
         "contiguous_memory_optimization": True,
     }
