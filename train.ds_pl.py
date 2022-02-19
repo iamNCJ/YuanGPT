@@ -13,7 +13,7 @@ if __name__ == '__main__':
         layer_num=40,
         attention_heads=24,
         seq_length=2048,
-        learning_rate=0.0001,
+        learning_rate=0.00007,
         batch_size=19,
     )
     core_model = HFModel(mock_config)
