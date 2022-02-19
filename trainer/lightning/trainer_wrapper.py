@@ -32,9 +32,9 @@ def train(
 
     # do train
     wrapper_model = LitModel(model, strategy=use_distributed, profile_mem=profile_mem)
-    logger = NamedLogger(asdict(model.config))
+    # logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(
-        logger=logger,
+        logger=False,
         log_every_n_steps=1,
         callbacks=[ModelSummary(max_depth=3)],
         strategy=use_distributed.pl_strategy,

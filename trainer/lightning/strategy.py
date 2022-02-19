@@ -19,22 +19,22 @@ custom_deepspeed_config = {
         "stage": 3,
         # "offload_optimizer": True,  # Enable Offloading optimizer state/calculation to the host CPU
         "offload_parameters": True,  # Enable Offloading parameters to the host CPU
-        "contiguous_gradients": True,  # Reduce gradient fragmentation.
+        "contiguous_gradients": False,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
         "offload_param": {
             "device": "cpu",
-            "pin_memory": True
+            "pin_memory": False
         },
         "offload_optimizer": {
             "device": "cpu",
-            "pin_memory": True,
+            "pin_memory": False,
         }
     },
-    # "activation_checkpointing": {
-    #     "partition_activations": True,
-    #     "cpu_checkpointing": True,
-    #     "contiguous_memory_optimization": True,
-    # },
+    "activation_checkpointing": {
+        "partition_activations": True,
+        "cpu_checkpointing": True,
+        "contiguous_memory_optimization": False,
+    },
 
     # Logging
     "logging": {
