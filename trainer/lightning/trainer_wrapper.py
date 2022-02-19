@@ -1,7 +1,6 @@
 # from dataclasses import asdict
 
 import pytorch_lightning as pl
-# from pytorch_lightning.callbacks import ModelSummary
 
 from model import BaseModel
 from trainer.lightning.model_wrapper import LitModel
@@ -36,7 +35,7 @@ def train(
     trainer = pl.Trainer(
         logger=False,
         log_every_n_steps=1,
-        # callbacks=[ModelSummary(max_depth=3)],
+        enable_model_summary=False,
         strategy=use_distributed.pl_strategy,
         **kwargs
     )
