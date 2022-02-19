@@ -31,11 +31,11 @@ custom_deepspeed_config = {
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
         "offload_param": {
             "device": "cpu",
-            "pin_memory": True
+            "pin_memory": False
         },
         "offload_optimizer": {
             "device": "cpu",
-            "pin_memory": True,
+            "pin_memory": False,
         }
     },
     "activation_checkpointing": {
