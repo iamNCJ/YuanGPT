@@ -46,7 +46,7 @@ custom_deepspeed_config = {
 
     # Logging
     "steps_per_print": 1,
-    "wall_clock_breakdown": False,
+    "wall_clock_breakdown": True,
     "tensorboard": {
         "enabled": True,
         "output_path": "logs/ds_logs/",
@@ -55,7 +55,7 @@ custom_deepspeed_config = {
 
     # Auto-tuning
     "autotuning": {
-        "enabled": True,
+        "enabled": False,
         "overwrite": False,
         "metric": "throughput",
         "start_profile_step": 3,
@@ -69,7 +69,7 @@ custom_deepspeed_config = {
 
     # Profiling
     "flops_profiler": {
-        "enabled": False,
+        "enabled": True,
         "profile_step": 2,
         "module_depth": -1,
         "top_modules": 10,
