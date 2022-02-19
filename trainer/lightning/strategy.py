@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from pytorch_lightning.plugins import DeepSpeedPlugin
 
@@ -30,11 +31,11 @@ custom_deepspeed_config = {
             "pin_memory": False,
         }
     },
-    "activation_checkpointing": {
-        "partition_activations": True,
-        "cpu_checkpointing": True,
-        "contiguous_memory_optimization": False,
-    },
+    # "activation_checkpointing": {
+    #     "partition_activations": True,
+    #     "cpu_checkpointing": True,
+    #     "contiguous_memory_optimization": False,
+    # },
 
     # Logging
     "steps_per_print": 1,
@@ -43,7 +44,7 @@ custom_deepspeed_config = {
     "tensorboard": {
         "enabled": True,
         "output_path": "logs/ds_logs/",
-        "job_name": "train_gpt2_yuan"
+        "job_name": f"train_gpt2_yuan{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
     }
 }
 
