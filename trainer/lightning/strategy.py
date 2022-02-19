@@ -27,7 +27,11 @@ custom_deepspeed_config = {
         }
     },
     # Logging
-    "wall_clock_breakdown": True,
+    "logging": {
+        "steps_per_print": 1,
+        "wall_clock_breakdown": True,
+        "dump_state": True,
+    },
 }
 
 
