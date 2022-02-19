@@ -32,13 +32,12 @@ class YuanDataModule(pl.LightningDataModule):
     def setup(self, stage: Optional[str] = None) -> None:
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
-            ids = torch.from_numpy(npz_data['id'].astype(np.int64))
-            print(torch.max(ids))
-            attention_masks = torch.from_numpy(npz_data['attention_mask'].astype(np.int64))
-            dataset = TensorDataset(ids, attention_masks)
-            train_dataset, val_dataset = random_split(dataset,
-                                                      [int(0.98 * len(dataset)), len(dataset) - int(0.98 * len(dataset))])
-            train_dataset = train_dataset[0:488282]
+            ids = torch.from_numpy((npz_data['id'])[0:(488282 + 100)].astype(np.int64))
+            # print(torch.max(ids))
+            # attention_masks = torch.from_numpy(npz_data['attention_mask'].astype(np.int64))
+            dataset = TensorDataset(ids)
+            train_dataset, val_dataset = random_split(dataset, [488282, 100])
+            # train_dataset = train_dataset[0:488282]
             self.dataset = YuanDataset(train_dataset, val_dataset)
 
     def train_dataloader(self):
