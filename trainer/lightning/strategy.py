@@ -4,7 +4,7 @@ from pytorch_lightning.plugins import DeepSpeedPlugin
 
 custom_deepspeed_config = {
     # Batch Size
-    "train_micro_batch_size_per_gpu": 20,
+    "train_micro_batch_size_per_gpu": 16,
     # "gradient_accumulation_steps": 1,
     # Do not set `gradient_accumulation_steps` in the DeepSpeed config as this will be set
     # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.
@@ -25,14 +25,14 @@ custom_deepspeed_config = {
     # ZeRO
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
-        "stage": 3,
-        "offload_parameters": True,  # Enable Offloading parameters to the host CPU
+        "stage": 2,
+        "offload_parameters": False,  # Enable Offloading parameters to the host CPU
         "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
-        "offload_param": {
-            "device": "cpu",
-            "pin_memory": False
-        },
+        # "offload_param": {
+        #     "device": "cpu",
+        #     "pin_memory": False
+        # },
         "offload_optimizer": {
             "device": "cpu",
             "pin_memory": False,
