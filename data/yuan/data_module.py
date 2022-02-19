@@ -37,7 +37,7 @@ class YuanDataModule(pl.LightningDataModule):
             attention_masks = torch.from_numpy(npz_data['attention_mask'].astype(np.int64))
             dataset = TensorDataset(ids, attention_masks)
             train_dataset, val_dataset = random_split(dataset,
-                                                      [int(0.98 * len(dataset)), len(dataset) - int(0.02 * len(dataset))])
+                                                      [int(0.98 * len(dataset)), len(dataset) - int(0.98 * len(dataset))])
             train_dataset = train_dataset[0:488282]
             self.dataset = YuanDataset(train_dataset, val_dataset)
 
