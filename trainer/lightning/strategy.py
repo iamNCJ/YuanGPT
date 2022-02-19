@@ -4,11 +4,15 @@ from pytorch_lightning.plugins import DeepSpeedPlugin
 custom_deepspeed_config = {
     # Batch Size
     "train_micro_batch_size_per_gpu": 18,
-    "gradient_accumulation_steps": 1,
+    # "gradient_accumulation_steps": 1,
+    # Do not set `gradient_accumulation_steps` in the DeepSpeed config as this will be set
+    # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.
+
     # Precision
     "bf16": {
         "enabled": True
     },
+
     # ZeRO
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
@@ -26,17 +30,18 @@ custom_deepspeed_config = {
             "pin_memory": True,
         }
     },
+    "activation_checkpointing": {
+        "partition_activations": True,
+        "cpu_checkpointing": True,
+        "contiguous_memory_optimization": True,
+    },
+
     # Logging
     "logging": {
         "steps_per_print": 1,
         "wall_clock_breakdown": True,
         "dump_state": True,
     },
-    "activation_checkpointing": {
-        "partition_activations": True,
-        "cpu_checkpointing": True,
-        "contiguous_memory_optimization": True,
-    }
 }
 
 
