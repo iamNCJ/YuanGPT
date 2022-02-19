@@ -55,8 +55,8 @@ custom_deepspeed_config = {
 
     # Auto-tuning
     "autotuning": {
-        "enabled": False,
-        "overwrite": True,
+        "enabled": True,
+        "overwrite": False,
         "metric": "throughput",
         "start_profile_step": 3,
         "end_profile_step": 5,
@@ -69,7 +69,7 @@ custom_deepspeed_config = {
 
     # Profiling
     "flops_profiler": {
-        "enabled": True,
+        "enabled": False,
         "profile_step": 2,
         "module_depth": -1,
         "top_modules": 10,
