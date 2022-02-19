@@ -1,11 +1,11 @@
-from dataclasses import asdict
+# from dataclasses import asdict
 
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks import ModelSummary
+# from pytorch_lightning.callbacks import ModelSummary
 
 from model import BaseModel
 from trainer.lightning.model_wrapper import LitModel
-from trainer.lightning.named_logger import NamedLogger
+# from trainer.lightning.named_logger import NamedLogger
 from trainer.lightning.strategy import DistributedStrategy
 
 
@@ -36,7 +36,7 @@ def train(
     trainer = pl.Trainer(
         logger=False,
         log_every_n_steps=1,
-        callbacks=[ModelSummary(max_depth=3)],
+        # callbacks=[ModelSummary(max_depth=3)],
         strategy=use_distributed.pl_strategy,
         **kwargs
     )

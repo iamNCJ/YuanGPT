@@ -18,7 +18,6 @@ custom_deepspeed_config = {
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
         "stage": 3,
-        # "offload_optimizer": True,  # Enable Offloading optimizer state/calculation to the host CPU
         "offload_parameters": True,  # Enable Offloading parameters to the host CPU
         "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
