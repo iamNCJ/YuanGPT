@@ -51,6 +51,30 @@ custom_deepspeed_config = {
         "enabled": True,
         "output_path": "logs/ds_logs/",
         "job_name": f"train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
+    },
+
+    # Auto-tuning
+    "autotuning": {
+        "enabled": False,
+        "overwrite": True,
+        "metric": "throughput",
+        "start_profile_step": 3,
+        "end_profile_step": 5,
+        "fast": False,
+        "max_train_batch_size": 19,
+        "mp_size": 1,
+        "tuner_type": "model_based",
+        "tuner_early_stopping": 5,
+        "tuner_num_trials": 50,
+    },
+
+    # Profiling
+    "flops_profiler": {
+        "enabled": True,
+        "profile_step": 2,
+        "module_depth": -1,
+        "top_modules": 10,
+        "detailed": True
     }
 }
 
