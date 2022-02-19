@@ -32,6 +32,11 @@ custom_deepspeed_config = {
         "wall_clock_breakdown": True,
         "dump_state": True,
     },
+    "activation_checkpointing": {
+        "partition_activations": False,
+        "cpu_checkpointing": True,
+        "contiguous_memory_optimization": True,
+    }
 }
 
 
