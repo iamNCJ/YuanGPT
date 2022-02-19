@@ -1,4 +1,16 @@
 from enum import Enum
+from pytorch_lightning.plugins import DeepSpeedPlugin
+
+custom_deepspeed_config = {
+    "zero_allow_untested_optimizer": True,
+    "zero_optimization": {
+        "stage": 3,
+        "offload_optimizer": True,  # Enable Offloading optimizer state/calculation to the host CPU
+        "offload_parameters": True,  # Enable Offloading parameters to the host CPU
+        "contiguous_gradients": True,  # Reduce gradient fragmentation.
+        "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
+    },
+}
 
 
 class DistributedStrategy(str, Enum):
@@ -13,6 +25,7 @@ class DistributedStrategy(str, Enum):
     DEEPSPEED_STAGE_3 = 5
     DEEPSPEED_STAGE_2_OFFLOAD = 6
     DEEPSPEED_STAGE_3_OFFLOAD = 7
+    CUSTOM = 8
 
     @property
     def use_offload(self):
@@ -34,6 +47,14 @@ class DistributedStrategy(str, Enum):
                         DistributedStrategy.DEEPSPEED_STAGE_3]
 
     @property
+    def use_custom(self):
+        """
+        Check whether the strategy uses custom DeepSpeed config json.
+        :return: bool
+        """
+        return self == DistributedStrategy.CUSTOM
+
+    @property
     def pl_strategy(self) -> str:
         mapping = {
             DistributedStrategy.NONE: None,
@@ -43,6 +64,7 @@ class DistributedStrategy(str, Enum):
             DistributedStrategy.DEEPSPEED_STAGE_2: 'deepspeed_stage_2',
             DistributedStrategy.DEEPSPEED_STAGE_3: 'deepspeed_stage_3',
             DistributedStrategy.DEEPSPEED_STAGE_2_OFFLOAD: 'deepspeed_stage_2_offload',
-            DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD: 'deepspeed_stage_3_offload'
+            DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD: 'deepspeed_stage_3_offload',
+            DistributedStrategy.CUSTOM: DeepSpeedPlugin(config=custom_deepspeed_config)
         }
         return mapping[self]

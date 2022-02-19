@@ -52,7 +52,7 @@ class LitModel(pl.LightningModule):
 
     def configure_optimizers(self):
         # Do Adam on CPU when offloading
-        if self.strategy.use_offload:
+        if self.strategy.use_offload or self.strategy.use_custom:
             # from torch.optim import Adam
             from torch.optim._multi_tensor import SGD
             return SGD(self.model.parameters(), lr=self.model.config.learning_rate)
