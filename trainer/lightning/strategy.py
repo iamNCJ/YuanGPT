@@ -74,7 +74,8 @@ custom_deepspeed_config = {
         "profile_step": 2,
         "module_depth": -1,
         "top_modules": 10,
-        "detailed": True
+        "detailed": True,
+        "output_file": "flops_profiler.txt",
     }
 }
 
