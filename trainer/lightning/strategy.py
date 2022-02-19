@@ -30,11 +30,11 @@ custom_deepspeed_config = {
             "pin_memory": True,
         }
     },
-    "activation_checkpointing": {
-        "partition_activations": True,
-        "cpu_checkpointing": True,
-        "contiguous_memory_optimization": True,
-    },
+    # "activation_checkpointing": {
+    #     "partition_activations": True,
+    #     "cpu_checkpointing": True,
+    #     "contiguous_memory_optimization": True,
+    # },
 
     # Logging
     "logging": {
@@ -42,6 +42,11 @@ custom_deepspeed_config = {
         "wall_clock_breakdown": True,
         "dump_state": True,
     },
+    "tensorboard": {
+        "enabled": True,
+        "output_path": "logs/ds_logs/",
+        "job_name": "train_gpt2_yuan"
+    }
 }
 
 
