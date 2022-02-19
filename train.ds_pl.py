@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # )
     pl_train(
         core_model, dm,
-        use_distributed=DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD,
+        use_distributed=DistributedStrategy.CUSTOM,
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         # profiler="pytorch",
