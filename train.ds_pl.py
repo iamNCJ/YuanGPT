@@ -14,7 +14,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
-        batch_size=20,
+        batch_size=19,
     )
     core_model = HFModel(mock_config)
     dm = YuanDataModule(
