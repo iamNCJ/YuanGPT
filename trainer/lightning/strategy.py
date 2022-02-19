@@ -27,7 +27,7 @@ custom_deepspeed_config = {
         },
         "offload_optimizer": {
             "device": "cpu",
-            "pin_memory": False,
+            "pin_memory": True,
         }
     },
     "activation_checkpointing": {
@@ -39,11 +39,10 @@ custom_deepspeed_config = {
     # Logging
     "steps_per_print": 1,
     "wall_clock_breakdown": True,
-    "dump_state": True,
     "tensorboard": {
         "enabled": True,
         "output_path": "logs/ds_logs/",
-        "job_name": f"train_gpt2_yuan{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
+        "job_name": f"train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
     }
 }
 
