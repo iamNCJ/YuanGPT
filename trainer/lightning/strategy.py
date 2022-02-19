@@ -2,14 +2,32 @@ from enum import Enum
 from pytorch_lightning.plugins import DeepSpeedPlugin
 
 custom_deepspeed_config = {
+    # Batch Size
+    "train_micro_batch_size_per_gpu": 18,
+    "gradient_accumulation_steps": 1,
+    # Precision
+    "bf16": {
+        "enabled": True
+    },
+    # ZeRO
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
         "stage": 3,
-        "offload_optimizer": True,  # Enable Offloading optimizer state/calculation to the host CPU
+        # "offload_optimizer": True,  # Enable Offloading optimizer state/calculation to the host CPU
         "offload_parameters": True,  # Enable Offloading parameters to the host CPU
         "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
+        "offload_param": {
+            "device": "cpu",
+            "pin_memory": True
+        },
+        "offload_optimizer": {
+            "device": "cpu",
+            "pin_memory": True,
+        }
     },
+    # Logging
+    "wall_clock_breakdown": True,
 }
 
 
