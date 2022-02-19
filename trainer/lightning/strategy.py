@@ -19,7 +19,7 @@ custom_deepspeed_config = {
         "stage": 3,
         # "offload_optimizer": True,  # Enable Offloading optimizer state/calculation to the host CPU
         "offload_parameters": True,  # Enable Offloading parameters to the host CPU
-        "contiguous_gradients": False,  # Reduce gradient fragmentation.
+        "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
         "offload_param": {
             "device": "cpu",
@@ -37,11 +37,9 @@ custom_deepspeed_config = {
     },
 
     # Logging
-    "logging": {
-        "steps_per_print": 1,
-        "wall_clock_breakdown": True,
-        "dump_state": True,
-    },
+    "steps_per_print": 1,
+    "wall_clock_breakdown": True,
+    "dump_state": True,
     "tensorboard": {
         "enabled": True,
         "output_path": "logs/ds_logs/",
