@@ -31,11 +31,11 @@ custom_deepspeed_config = {
             "pin_memory": False,
         }
     },
-    # "activation_checkpointing": {
-    #     "partition_activations": True,
-    #     "cpu_checkpointing": True,
-    #     "contiguous_memory_optimization": False,
-    # },
+    "activation_checkpointing": {
+        "partition_activations": True,
+        "cpu_checkpointing": True,
+        "contiguous_memory_optimization": True,
+    },
 
     # Logging
     "steps_per_print": 1,
