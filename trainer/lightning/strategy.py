@@ -61,7 +61,6 @@ custom_deepspeed_config = {
         "start_profile_step": 3,
         "end_profile_step": 5,
         "fast": False,
-        "max_train_batch_size": 19,
         "mp_size": 1,
         "tuner_type": "model_based",
         "tuner_early_stopping": 5,
@@ -75,7 +74,7 @@ custom_deepspeed_config = {
         "module_depth": -1,
         "top_modules": 10,
         "detailed": True,
-        "output_file": "flops_profiler.txt",
+        "output_file": "./flops_profiler.txt",
     }
 }
 
