@@ -8,13 +8,13 @@ from trainer.lightning import pl_train, DistributedStrategy
 if __name__ == '__main__':
 
     mock_config = LMConfig(
-        vocab_size=53229,
+        vocab_size=53228,
         hidden_size=3072,
         layer_num=40,
         attention_heads=24,
         seq_length=2048,
         learning_rate=0.0001,
-        batch_size=18,
+        batch_size=19,
     )
     core_model = HFModel(mock_config)
     dm = YuanDataModule(
