@@ -29,7 +29,6 @@ custom_deepspeed_config = {
             "device": "cpu",
             "pin_memory": False,
         },
-        "reduce_scatter": False  # Use allReduce
     },
     "activation_checkpointing": {
         "partition_activations": True,
