@@ -19,7 +19,7 @@ if __name__ == '__main__':
     core_model = HFModel(config)
     dm = YuanDataModule(
         batch_size=config.batch_size,
-        processed_data_path='/shared/YuanDataset/processed_data.npz'
+        processed_data_path='./data/yuan/processed_data.npz'
     )
     pl_train(
         core_model, dm,
