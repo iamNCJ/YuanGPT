@@ -4,6 +4,7 @@ from dataclasses import asdict
 from datetime import datetime
 
 import pytorch_lightning as pl
+from pytorch_lightning.callbacks.progress.tqdm_progress import reset
 
 from config import LMConfig
 from model import BaseModel
@@ -29,10 +30,17 @@ class LitProgressBar(TQDMProgressBar):
         self.lr = config.learning_rate
         self.batch_size = config.batch_size
 
-    def init_train_tqdm(self):
-        bar = super().init_train_tqdm()
-        bar.set_description(f'Training with lr={self.lr} bs={self.batch_size}')
-        return bar
+    def on_train_epoch_start(self, trainer, pl_module):
+        super().on_train_epoch_start(trainer, pl_module)
+        total_train_batches = self.total_train_batches
+        total_val_batches = self.total_val_batches
+        if total_train_batches != float("inf") and total_val_batches != float("inf"):
+            # val can be checked multiple times per epoch
+            val_checks_per_epoch = total_train_batches // trainer.val_check_batch
+            total_val_batches = total_val_batches * val_checks_per_epoch
+        total_batches = total_train_batches + total_val_batches
+        reset(self.main_progress_bar, total=total_batches, current=self.train_batch_idx)
+        self.main_progress_bar.set_description(f"Epoch {trainer.current_epoch} lr={self.lr} bs={self.batch_size}")
 
 
 def train(
