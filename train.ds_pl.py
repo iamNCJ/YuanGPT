@@ -7,7 +7,7 @@ from trainer.lightning import pl_train, DistributedStrategy
 
 if __name__ == '__main__':
 
-    mock_config = LMConfig(
+    config = LMConfig(
         vocab_size=53226,
         hidden_size=3072,
         layer_num=40,
@@ -16,9 +16,9 @@ if __name__ == '__main__':
         learning_rate=0.0004,
         batch_size=16,
     )
-    core_model = HFModel(mock_config)
+    core_model = HFModel(config)
     dm = YuanDataModule(
-        batch_size=mock_config.batch_size,
+        batch_size=config.batch_size,
         processed_data_path='./data/yuan/processed_data.npz'
     )
     pl_train(
