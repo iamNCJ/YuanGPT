@@ -1,4 +1,5 @@
 import logging
+import sys
 from dataclasses import asdict
 from datetime import datetime
 
@@ -8,6 +9,7 @@ from model import BaseModel
 from trainer.lightning.model_wrapper import LitModel
 from trainer.lightning.named_logger import NamedLogger
 from trainer.lightning.strategy import DistributedStrategy
+from trainer.lightning.stream_logger import StreamToLogger
 
 
 def train(
@@ -29,9 +31,15 @@ def train(
     """
 
     # configure logging at the root level of lightning
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
+    )
     logger = logging.getLogger("pytorch_lightning")
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.FileHandler(f"log/train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"))
+    sys.stdout = StreamToLogger(logger, logging.INFO)
+    sys.stderr = StreamToLogger(logger, logging.ERROR)
 
     # set seed
     pl.seed_everything(seed)
