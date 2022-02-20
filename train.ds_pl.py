@@ -8,7 +8,7 @@ from trainer.lightning import pl_train, DistributedStrategy
 if __name__ == '__main__':
 
     config = LMConfig(
-        vocab_size=53226,
+        vocab_size=53005,
         hidden_size=3072,
         layer_num=40,
         attention_heads=24,
