@@ -27,7 +27,7 @@ custom_deepspeed_config = {
         # },
         "offload_optimizer": {
             "device": "cpu",
-            "pin_memory": False,
+            "pin_memory": True,
         },
     },
     "activation_checkpointing": {
