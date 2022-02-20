@@ -2,7 +2,7 @@
 [S]
 [/S]
 [SEP]
-[PAS]
+[PAD]
 [MASK]
 [EOD]
 [CLS]
