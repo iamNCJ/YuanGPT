@@ -5,7 +5,7 @@ from pytorch_lightning import loggers as pl_loggers
 
 class NamedLogger(pl_loggers.TensorBoardLogger):
     def __init__(self, params: dict):
-        super().__init__('logs', default_hp_metric=False)
+        super().__init__('tensorboard', default_hp_metric=False)
         self.params = params
 
     @property

@@ -10,3 +10,4 @@ class LMConfig:
     vocab_size: int
     learning_rate: float
     batch_size: int
+    seed: int = 42

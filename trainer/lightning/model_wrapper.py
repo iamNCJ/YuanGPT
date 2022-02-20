@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from pprint import pprint
 
 import pytorch_lightning as pl
 import torch
@@ -22,6 +23,7 @@ class LitModel(pl.LightningModule):
         if self.profile:
             self.gpu_mem_tracker = MemTracker()
         self.save_hyperparameters(asdict(model.config))
+        pprint(asdict(model.config))
 
     def forward(self, *args):
         # input_ids, attention_masks(optional)
@@ -52,13 +54,12 @@ class LitModel(pl.LightningModule):
         return {'val_loss': avg_loss}
 
     def configure_optimizers(self):
-        # Do Adam on CPU when offloading
-        if self.strategy.use_offload or self.strategy.use_custom:
-            # from torch.optim import Adam
+        if self.strategy.use_offload:
+            from deepspeed.ops.adam import DeepSpeedCPUAdam
+            return DeepSpeedCPUAdam(self.parameters(), lr=self.model.config.learning_rate)
+        if self.strategy.use_custom:
             from torch.optim._multi_tensor import SGD
             return SGD(self.model.parameters(), lr=self.model.config.learning_rate)
-            # from deepspeed.ops.adam import DeepSpeedCPUAdam
-            # return DeepSpeedCPUAdam(self.parameters(), lr=self.model.config.learning_rate)
         # Use FusedAdam when ZeRO is on and offload is not used, which reduces optimizer state
         elif self.strategy.use_deepspeed_zero:
             from deepspeed.ops.adam import FusedAdam

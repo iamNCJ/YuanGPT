@@ -33,7 +33,6 @@ class YuanDataModule(pl.LightningDataModule):
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
             ids = torch.from_numpy((npz_data['id'])[0:(488282 + 100)].astype(np.int64))
-            # print(torch.max(ids))
             # attention_masks = torch.from_numpy(npz_data['attention_mask'].astype(np.int64))
             dataset = TensorDataset(ids)
             train_dataset, val_dataset = random_split(dataset, [488282, 100])

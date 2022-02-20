@@ -1,4 +1,6 @@
+import logging
 from dataclasses import asdict
+from datetime import datetime
 
 import pytorch_lightning as pl
 
@@ -26,14 +28,19 @@ def train(
     :param kwargs: other kwargs for `pl.Trainer`
     """
 
+    # configure logging at the root level of lightning
+    logger = logging.getLogger("pytorch_lightning")
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.FileHandler(f"log/train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"))
+
     # set seed
     pl.seed_everything(seed)
 
     # do train
     wrapper_model = LitModel(model, strategy=use_distributed, profile_mem=profile_mem)
-    logger = NamedLogger(asdict(model.config))
+    board_logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(
-        logger=logger,
+        logger=board_logger,
         log_every_n_steps=1,
         enable_model_summary=False,
         strategy=use_distributed.pl_strategy,
