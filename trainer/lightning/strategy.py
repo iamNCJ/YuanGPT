@@ -29,8 +29,7 @@ custom_deepspeed_config = {
             "device": "cpu",
             "pin_memory": False,
         },
-        "round_robin_gradients": True,  # Stage 2 optimization for CPU offloading that parallelizes gradient copying
-        # "reduce_scatter": False  # Use allReduce
+        "reduce_scatter": False  # Use allReduce
     },
     "activation_checkpointing": {
         "partition_activations": True,
