@@ -18,10 +18,10 @@ from pytorch_lightning.callbacks import Callback, TQDMProgressBar
 
 class TimerCallback(Callback):
     def on_train_start(self, trainer, pl_module):
-        print(f"Training has started at {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}!")
+        print(f"Training has started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}!")
 
     def on_train_end(self, trainer, pl_module):
-        print(f"Training has finished at {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}!")
+        print(f"Training has finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}!")
 
 
 class LitProgressBar(TQDMProgressBar):
