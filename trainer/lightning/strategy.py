@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 from enum import Enum
 from pytorch_lightning.plugins import DeepSpeedPlugin
 
@@ -9,15 +9,7 @@ custom_deepspeed_config = {
     # Do not set `gradient_accumulation_steps` in the DeepSpeed config as this will be set
     # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.
 
-    # # fp16
-    # "fp16": {
-    #     "enabled": True,
-    #     "loss_scale": 0,
-    #     "initial_scale_power": 32,
-    #     "loss_scale_window": 1000,
-    #     "hysteresis": 2,
-    #     "min_loss_scale": 1
-    # },
+    # amp
     "bf16": {
         "enabled": True
     },
@@ -36,7 +28,9 @@ custom_deepspeed_config = {
         "offload_optimizer": {
             "device": "cpu",
             "pin_memory": False,
-        }
+        },
+        "round_robin_gradients": True,  # Stage 2 optimization for CPU offloading that parallelizes gradient copying
+        # "reduce_scatter": False  # Use allReduce
     },
     "activation_checkpointing": {
         "partition_activations": True,
@@ -45,13 +39,13 @@ custom_deepspeed_config = {
     },
 
     # Logging
-    "steps_per_print": 1,
-    "wall_clock_breakdown": True,
-    "tensorboard": {
-        "enabled": True,
-        "output_path": "logs/ds_logs/",
-        "job_name": f"train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
-    },
+    # "steps_per_print": 1,
+    # "wall_clock_breakdown": False,
+    # "tensorboard": {
+    #     "enabled": False,
+    #     "output_path": "logs/ds_logs/",
+    #     "job_name": f"train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
+    # },
 
     # Profiling
     "flops_profiler": {

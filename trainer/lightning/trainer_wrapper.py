@@ -1,10 +1,10 @@
-# from dataclasses import asdict
+from dataclasses import asdict
 
 import pytorch_lightning as pl
 
 from model import BaseModel
 from trainer.lightning.model_wrapper import LitModel
-# from trainer.lightning.named_logger import NamedLogger
+from trainer.lightning.named_logger import NamedLogger
 from trainer.lightning.strategy import DistributedStrategy
 
 
@@ -31,9 +31,9 @@ def train(
 
     # do train
     wrapper_model = LitModel(model, strategy=use_distributed, profile_mem=profile_mem)
-    # logger = NamedLogger(asdict(model.config))
+    logger = NamedLogger(asdict(model.config))
     trainer = pl.Trainer(
-        logger=False,
+        logger=logger,
         log_every_n_steps=1,
         enable_model_summary=False,
         strategy=use_distributed.pl_strategy,
