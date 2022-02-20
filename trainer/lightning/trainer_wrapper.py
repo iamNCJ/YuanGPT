@@ -5,11 +5,34 @@ from datetime import datetime
 
 import pytorch_lightning as pl
 
+from config import LMConfig
 from model import BaseModel
 from trainer.lightning.model_wrapper import LitModel
 from trainer.lightning.named_logger import NamedLogger
 from trainer.lightning.strategy import DistributedStrategy
 from trainer.lightning.stream_logger import StreamToLogger
+
+from pytorch_lightning.callbacks import Callback, TQDMProgressBar
+
+
+class TimerCallback(Callback):
+    def on_train_start(self, trainer, pl_module):
+        print(f"Training has started at {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}!")
+
+    def on_train_end(self, trainer, pl_module):
+        print(f"Training has finished at {datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}!")
+
+
+class LitProgressBar(TQDMProgressBar):
+    def __init__(self, config: LMConfig):
+        super().__init__()
+        self.lr = config.learning_rate
+        self.batch_size = config.batch_size
+
+    def init_train_tqdm(self):
+        bar = super().init_train_tqdm()
+        bar.set_description(f'Training with lr={self.lr} bs={self.batch_size}')
+        return bar
 
 
 def train(
@@ -31,13 +54,13 @@ def train(
     """
 
     # configure logging at the root level of lightning
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s:%(levelname)s:%(name)s:%(message)s'
-    )
     logger = logging.getLogger("pytorch_lightning")
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.FileHandler(f"log/train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt"))
+    fh = logging.FileHandler(f"log/train_gpt2_yuan_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.txt")
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+
+    # redirect stdout & stderr to logger
     sys.stdout = StreamToLogger(logger, logging.INFO)
     sys.stderr = StreamToLogger(logger, logging.ERROR)
 
@@ -54,6 +77,7 @@ def train(
         strategy=use_distributed.pl_strategy,
         accumulate_grad_batches=16,
         num_sanity_val_steps=0,
+        callbacks=[TimerCallback(), LitProgressBar(model.config)],
         **kwargs
     )
     trainer.fit(wrapper_model, data_module)

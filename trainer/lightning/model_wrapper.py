@@ -1,5 +1,4 @@
 from dataclasses import asdict
-from pprint import pprint
 
 import pytorch_lightning as pl
 import torch
@@ -23,7 +22,7 @@ class LitModel(pl.LightningModule):
         if self.profile:
             self.gpu_mem_tracker = MemTracker()
         self.save_hyperparameters(asdict(model.config))
-        pprint(asdict(model.config))
+        print(asdict(model.config))
 
     def forward(self, *args):
         # input_ids, attention_masks(optional)
