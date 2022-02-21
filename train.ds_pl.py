@@ -13,7 +13,7 @@ if __name__ == '__main__':
         layer_num=40,
         attention_heads=24,
         seq_length=2048,
-        learning_rate=5e-5,
+        learning_rate=5e-6,
         batch_size=16,
         accumulate_grad_batches=1,
     )
