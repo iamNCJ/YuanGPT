@@ -57,8 +57,10 @@ class LitModel(pl.LightningModule):
             from deepspeed.ops.adam import DeepSpeedCPUAdam
             return DeepSpeedCPUAdam(self.parameters(), lr=self.model.config.learning_rate)
         if self.strategy.use_custom:
-            from torch.optim._multi_tensor import SGD
-            return SGD(self.model.parameters(), lr=self.model.config.learning_rate)
+            from deepspeed.ops.adam import DeepSpeedCPUAdam
+            return DeepSpeedCPUAdam(self.parameters(), lr=self.model.config.learning_rate)
+            # from torch.optim._multi_tensor import SGD
+            # return SGD(self.model.parameters(), lr=self.model.config.learning_rate)
         # Use FusedAdam when ZeRO is on and offload is not used, which reduces optimizer state
         elif self.strategy.use_deepspeed_zero:
             from deepspeed.ops.adam import FusedAdam
