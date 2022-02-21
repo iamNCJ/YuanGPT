@@ -22,11 +22,13 @@ class YuanDataModule(pl.LightningDataModule):
             batch_size: int = 32,
             num_workers: int = 8,
             processed_data_path: str = './processed_data.npz',
+            pin_memory: bool = True,
     ):
         super().__init__()
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.processed_data_path = processed_data_path
+        self.pin_memory = pin_memory
         self.dataset: Optional[YuanDataset] = None
 
     def setup(self, stage: Optional[str] = None) -> None:
@@ -41,10 +43,22 @@ class YuanDataModule(pl.LightningDataModule):
             self.dataset = YuanDataset(train_dataset, val_dataset)
 
     def train_dataloader(self):
-        return DataLoader(self.dataset.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(
+            self.dataset.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
+            pin_memory=self.pin_memory
+        )
 
     def val_dataloader(self):
-        return DataLoader(self.dataset.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+        return DataLoader(
+            self.dataset.val_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers,
+            pin_memory=self.pin_memory
+        )
 
 
 if __name__ == '__main__':
