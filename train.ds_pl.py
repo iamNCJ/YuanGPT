@@ -25,8 +25,8 @@ if __name__ == '__main__':
         core_model, dm,
         use_distributed=DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD,
         gpus=-1 if torch.cuda.is_available() else None,
-        precision=16,
+        # precision=16,
         max_epochs=1,
-        accumulate_grad_batches=16,
+        accumulate_grad_batches=1,
         seed=config.seed
     )
