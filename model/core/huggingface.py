@@ -1,11 +1,12 @@
 import torch
 from torch import nn
 from torchtyping import TensorType
-from transformers import GPT2Config, GPT2LMHeadModel
+from transformers import GPT2Config
 from transformers.modeling_utils import no_init_weights
 
 from config import LMConfig
 from model.core.abstract import BaseModel
+from model.core.hf_backbone import GPT2LMHeadHackedModel
 
 torch._C._jit_set_profiling_mode(False)
 torch._C._jit_set_profiling_executor(False)
@@ -28,7 +29,8 @@ class GenerativeLM(BaseModel):
             use_cache=False
         )
         with no_init_weights(_enable=True):
-            self.model = GPT2LMHeadModel(gpt2_config)
+            self.model = GPT2LMHeadHackedModel(gpt2_config)
+            self.model.lm_head = torch.nn.functional.linear
             self.model.gradient_checkpointing_enable()
         self.loss_fct = nn.CrossEntropyLoss()
 
