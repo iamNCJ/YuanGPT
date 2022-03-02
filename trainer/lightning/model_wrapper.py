@@ -16,7 +16,8 @@ class LitModel(pl.LightningModule):
     def __init__(self, model: BaseModel, strategy: DistributedStrategy, profile_mem: bool = False):
         super().__init__()
         self.model = model
-        print(sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values()))
+        param_num = sum(dict((p.data_ptr(), p.numel()) for p in model.parameters()).values())
+        print(f'param_num: {param_num / 1e9:.1f}B')
         self.strategy = strategy
         self.profile = profile_mem
         if self.profile:
