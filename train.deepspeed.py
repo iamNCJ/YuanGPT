@@ -14,6 +14,7 @@ if __name__ == '__main__':
     )
     dm = YuanDataModule(
         batch_size=16,
-        processed_data_path='./data/yuan/processed_data.npz'
+        processed_data_path='./data/yuan/processed_data.npz',
+        use_distributed_sampler=True
     )
     ds_train(config, dm)
