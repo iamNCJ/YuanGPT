@@ -1,0 +1,30 @@
+from config import LMConfig
+from model import HFModel
+from data import YuanDataModule
+from trainer.colossal_ai import col_ai_train
+
+if __name__ == '__main__':
+    config = LMConfig(
+        vocab_size=53005,
+        hidden_size=3072,
+        layer_num=40,
+        attention_heads=24,
+        seq_length=2048,
+        learning_rate=5e-5,
+        batch_size=10,
+    )
+    core_model = HFModel(config)
+    dm = YuanDataModule(
+        batch_size=config.batch_size,
+        processed_data_path='./data/yuan/processed_data.npz',
+        use_distributed_sampler=True
+    )
+    col_ai_train(
+        core_model, dm,
+        num_epochs=1,
+        warmup_steps=5,
+        seed=config.seed
+    )
+
+# OMP_NUM_THREADS=32 torchrun --standalone --nnodes=1 --nproc_per_node 2 train.col_ai.py --config=trainer/colossal_ai/strategy.py --from_torch
+# OMP_NUM_THREADS=32 torchrun --rdzv_endpoint=172.25.2.104:29400 --nnodes=2 --node_rank=0 --nproc_per_node=2 train.col_ai.py --config=trainer/colossal_ai/strategy.py --from_torch

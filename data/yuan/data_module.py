@@ -35,13 +35,18 @@ class YuanDataModule(pl.LightningDataModule):
         self.use_distributed_sampler = use_distributed_sampler
         self.dataset: Optional[YuanDataset] = None
 
-    def setup(self, stage: Optional[str] = None) -> None:
+    def setup(self, stage: Optional[str] = None, has_labels: bool = False) -> None:
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
-            ids = torch.from_numpy((npz_data['id'])[0:(488282 + 100)].astype(np.int64))
+            ids = (npz_data['id'])[0:(488282 + 100)].astype(np.int64)
             # print(f'max id = {torch.max(ids)}')
             # attention_masks = torch.from_numpy(npz_data['attention_mask'].astype(np.int64))
-            dataset = TensorDataset(ids)
+            if (has_labels):
+                # labels = np.roll(ids, -1, axis=1)
+                labels = ids
+                dataset = TensorDataset(torch.from_numpy(ids), torch.from_numpy(labels))
+            else:
+                dataset = TensorDataset(torch.from_numpy(ids))
             train_dataset, val_dataset = random_split(dataset, [488282, 100])
             # train_dataset = train_dataset[0:488282]
             self.dataset = YuanDataset(train_dataset, val_dataset)
@@ -54,7 +59,6 @@ class YuanDataModule(pl.LightningDataModule):
         return DataLoader(
             self.dataset.train_dataset,
             batch_size=self.batch_size,
-            shuffle=True,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
             sampler=sampler
@@ -68,7 +72,6 @@ class YuanDataModule(pl.LightningDataModule):
         return DataLoader(
             self.dataset.val_dataset,
             batch_size=self.batch_size,
-            shuffle=False,
             num_workers=self.num_workers,
             pin_memory=self.pin_memory,
             sampler=sampler
