@@ -1,14 +1,8 @@
-import sys
-
-sys.path.append('../../')
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
 from model import BaseModel
 from torchtyping import TensorType
-from model import HFModel
-from config import LMConfig
-from data import MockDataModule, YuanDataModule
 from transformers import Trainer, TrainingArguments
 
 
@@ -114,6 +108,9 @@ custom_deepspeed_config = {
 }
 
 if __name__ == '__main__':
+    from model import HFModel
+    from config import LMConfig
+    from data import MockDataModule, YuanDataModule
     mock_config = LMConfig(
         vocab_size=53005,
         hidden_size=3072,
