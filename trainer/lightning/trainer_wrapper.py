@@ -1,5 +1,6 @@
 import logging
 import sys
+import os
 from dataclasses import asdict
 from datetime import datetime
 
@@ -17,11 +18,20 @@ from pytorch_lightning.callbacks import Callback, TQDMProgressBar
 
 
 class TimerCallback(Callback):
+    def __init__(self, log_name):
+        super().__init__()
+        self.log_name = log_name
+
     def on_train_start(self, trainer, pl_module):
         print(f"Training has started at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}!")
 
     def on_train_end(self, trainer, pl_module):
         print(f"Training has finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}!")
+
+    def on_exception(self, trainer, pl_module, exception):
+        print("Saving model...")
+        trainer.save_checkpoint(f"./ckpt/{self.log_name}")
+        print("Model saved!")
 
 
 class LitProgressBar(TQDMProgressBar):
@@ -46,6 +56,7 @@ class LitProgressBar(TQDMProgressBar):
 def train(
         model: BaseModel,
         data_module: pl.LightningDataModule,
+        log_name: str = None,
         use_distributed: DistributedStrategy = DistributedStrategy.NONE,
         seed: int = 42,
         profile_mem: bool = False,
@@ -77,17 +88,21 @@ def train(
 
     # do train
     wrapper_model = LitModel(model, strategy=use_distributed, profile_mem=profile_mem)
-    board_logger = NamedLogger(asdict(model.config))
+    board_logger = NamedLogger(asdict(model.config), log_name)
     trainer = pl.Trainer(
         logger=board_logger,
         log_every_n_steps=1,
         enable_model_summary=False,
         strategy=use_distributed.pl_strategy,
         num_sanity_val_steps=0,
-        callbacks=[TimerCallback(), LitProgressBar(model.config)],
+        callbacks=[TimerCallback(log_name), LitProgressBar(model.config)],
         **kwargs
     )
-    trainer.fit(wrapper_model, data_module)
+
+    if os.path.exists(f"./ckpt/{log_name}"):
+        trainer.fit(wrapper_model, data_module, ckpt_path=f"./ckpt/{log_name}")
+    else:
+        trainer.fit(wrapper_model, data_module)
 
 
 if __name__ == '__main__':

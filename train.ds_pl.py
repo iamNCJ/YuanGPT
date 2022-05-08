@@ -22,7 +22,7 @@ if __name__ == '__main__':
         processed_data_path='./data/yuan/processed_data.npz'
     )
     pl_train(
-        core_model, dm,
+        core_model, dm, "model_name",
         use_distributed=DistributedStrategy.CUSTOM,
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
