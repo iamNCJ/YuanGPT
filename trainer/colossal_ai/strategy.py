@@ -1,7 +1,13 @@
+from colossalai.zero.shard_utils import TensorShardStrategy
+from colossalai.amp import AMP_TYPE
+
+
 zero = dict(
-    level=2,
-    dynamic_loss_scale=True,
-    overlap_comm=True,
-    clip_grad=1.0,
-    cpu_offload=True,
+    model_config=dict(
+        tensor_placement_policy='cpu',
+        shard_strategy=TensorShardStrategy()
+    ),
+    optimizer_config=dict()
 )
+
+

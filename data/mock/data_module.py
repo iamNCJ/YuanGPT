@@ -25,8 +25,13 @@ class MockDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.dataset = None
 
-    def setup(self, stage: Optional[str] = None) -> None:
-        self.dataset = TensorDataset(torch.randint(self.vocab_size, (self.data_size, self.seq_length)))
+    def setup(self, stage: Optional[str] = None, has_labels: bool = False) -> None:
+        ids = torch.randint(self.vocab_size, (self.data_size, self.seq_length))
+        if (has_labels):
+            labels = ids
+            self.dataset = TensorDataset(ids, labels)
+        else:
+            self.dataset = TensorDataset(ids)
 
     def train_dataloader(self):
         return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
