@@ -1,17 +1,3 @@
-import os
-import datetime
-import json
-import pathlib
-import re
-import string
-import logging
-import loguru
-import random
-import pytz
-import sh
-from functools import partial
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar, Union
-
 from transformers.deepspeed import HfDeepSpeedConfig
 import pytorch_lightning as pl
 import deepspeed
@@ -26,7 +12,7 @@ from trainer.deepspeed.model_wrapper import DeepSpeedModel
 ds_config = {
     # Batch Size
     # "train_batch_size": 32,
-    "train_micro_batch_size_per_gpu": 8,
+    "train_micro_batch_size_per_gpu": 16,
     "gradient_accumulation_steps": 1,
     # Do not set `gradient_accumulation_steps` in the DeepSpeed config as this will be set
     # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.

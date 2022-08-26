@@ -25,7 +25,7 @@ class GenerativeLM(BaseModel):
 
     @typechecked
     def forward(self, input_ids: TensorType["batch_size", "seq_length"],
-                attention_masks: TensorType["batch_size", "seq_length"], *args) \
+                attention_masks: TensorType["batch_size", "seq_length"] = None, *args) \
             -> TensorType["batch_size", "seq_length", "vocab_size"]:
         return self.model(input_ids)
 

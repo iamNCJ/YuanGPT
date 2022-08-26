@@ -23,7 +23,7 @@ class GenerativeLM(BaseModel):
             depth=config.layer_num,
             activation=nn.functional.relu,
             bias=False,
-            fuse_scale_mask_softmax=True
+            fuse_scale_mask_softmax=False
         )
         self.loss_fct = nn.CrossEntropyLoss()
     

@@ -5,9 +5,10 @@ import pytorch_lightning as pl
 from model import BaseModel
 from trainer.colossal_ai.criterion_wrapper import ColAICriterion
 # from trainer.colossal_ai.model_wrapper import ColAIModel
-from model import ColAIModel
+from model import ColAIModel, HFModel, NativeModel
 
 import colossalai
+import colossalai.utils as utils
 from colossalai.context.parallel_mode import ParallelMode
 from colossalai.logging import get_dist_logger, disable_existing_loggers
 from colossalai.core import global_context as gpc
@@ -49,7 +50,7 @@ def train(config: LMConfig,
                               shard_strategy=gpc.config.zero.model_config.shard_strategy,
                               shard_param=True)
     with ctx:
-        model = ColAIModel(config)
+        model = NativeModel(config)
 
     if use_zero:
         numel = ctx.model_numel_tensor.item()
@@ -62,7 +63,14 @@ def train(config: LMConfig,
     optimizer = model.get_optimizer()
 
     data_module.setup(has_labels=True)
-    train_dataloader = data_module.train_dataloader()
+    # train_dataloader = data_module.train_dataloader()
+    train_dataloader = utils.get_dataloader(data_module.dataset.train_dataset,
+                                            seed=seed,
+                                            batch_size=config.batch_size,
+                                            pin_memory=True,
+                                            shuffle=True,
+                                            drop_last=True,
+                                            num_workers=8)
     logger.info('dataloader built', ranks=[0])
 
     lr_scheduler = LinearWarmupLR(optimizer, total_steps=num_epochs, warmup_steps=warmup_steps)

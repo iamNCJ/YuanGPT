@@ -1,8 +1,28 @@
+from torch import nn
 import torch.nn.functional as F
 from torch.nn import CrossEntropyLoss
+from colossalai import nn as col_nn
 from transformers import GPT2PreTrainedModel, GPT2Model
 from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions
 
+class GPTLMHead(nn.Module):
+
+    def __init__(self,
+                 hidden_size: int,
+                 vocab_size: int,
+                 embedding_layer=None) -> None:
+        super().__init__()
+        self.dense = col_nn.Classifier(hidden_size, vocab_size, embedding_layer.weight)
+
+    @property
+    def weight(self):
+        return self.dense.weight
+
+    def forward(self, x):
+        # the size of x before dense is (BATCH_SIZE, SEQ_LEN, HIDDEN_SIZE)
+        # the size of x after dense is (BATCH_SIZE, SEQ_LEN, VOCAB_SIZE)
+        x = self.dense(x)
+        return x
 
 class GPT2LMHeadHackedModel(GPT2PreTrainedModel):
     _keys_to_ignore_on_load_missing = [r"attn.masked_bias", r"attn.bias", r"lm_head.weight"]
@@ -10,7 +30,11 @@ class GPT2LMHeadHackedModel(GPT2PreTrainedModel):
     def __init__(self, config):
         super().__init__(config)
         self.transformer = GPT2Model(config)
-
+        self.lm_head = GPTLMHead(
+            hidden_size=config.hidden_size,
+            vocab_size=config.vocab_size,
+            embedding_layer=self.transformer.get_input_embeddings()
+        )
         # Initialize weights and apply final processing
         self.post_init()
 
@@ -56,7 +80,8 @@ class GPT2LMHeadHackedModel(GPT2PreTrainedModel):
         )
         hidden_states = transformer_outputs[0]
 
-        lm_logits = F.linear(hidden_states, self.transformer.wte.weight)
+        # lm_logits = F.linear(hidden_states, self.transformer.wte.weight)
+        lm_logits = self.lm_head(hidden_states)
 
         loss = None
         if labels is not None:

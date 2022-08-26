@@ -11,7 +11,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=5e-5,
-        batch_size=1,
+        batch_size=4,
     )
     # config = LMConfig(
     #     vocab_size=53228,

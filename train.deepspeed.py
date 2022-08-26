@@ -10,10 +10,10 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=5e-5,
-        batch_size=8,
+        batch_size=16,
     )
     dm = YuanDataModule(
-        batch_size=16,
+        batch_size=32,
         processed_data_path='./data/yuan/processed_data.npz',
         use_distributed_sampler=True
     )

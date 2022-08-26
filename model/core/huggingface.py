@@ -30,7 +30,7 @@ class GenerativeLM(BaseModel):
         )
         with no_init_weights(_enable=False):
             self.model = GPT2LMHeadHackedModel(gpt2_config)
-            self.model.lm_head = torch.nn.functional.linear
+            # self.model.lm_head = torch.nn.functional.linear
             self.model.gradient_checkpointing_enable()
         self.loss_fct = nn.CrossEntropyLoss()
 
