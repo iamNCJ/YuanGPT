@@ -5,7 +5,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch.nn import CrossEntropyLoss
 from colossalai import nn as col_nn
-from transformers import GPT2PreTrainedModel, logger
+from transformers import GPT2PreTrainedModel
 from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions, BaseModelOutputWithPastAndCrossAttentions
 from transformers.models.gpt2.modeling_gpt2 import GPT2Attention, GPT2MLP
 from transformers.utils.model_parallel_utils import get_device_map, assert_device_map
@@ -305,9 +305,6 @@ class FlashGPT2Model(GPT2PreTrainedModel):
             if self.gradient_checkpointing and self.training:
 
                 if use_cache:
-                    logger.warning(
-                        "`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`..."
-                    )
                     use_cache = False
 
                 def create_custom_forward(module):
@@ -439,7 +436,7 @@ class FlashGPT2Block(nn.Module):
             attn_output = cross_attn_outputs[0]
             # residual connection
             hidden_states = residual + attn_output
-            outputs = outputs + cross_attn_outputs[2:]  # add cross attentions if we output attention weights
+            outputs = attn_outputs + cross_attn_outputs[2:]  # add cross attentions if we output attention weights
 
         residual = hidden_states
         hidden_states = self.ln_2(hidden_states)
