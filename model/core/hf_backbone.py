@@ -10,7 +10,7 @@ from transformers.modeling_outputs import CausalLMOutputWithCrossAttentions, Bas
 from transformers.models.gpt2.modeling_gpt2 import GPT2Attention, GPT2MLP
 from transformers.utils.model_parallel_utils import get_device_map, assert_device_map
 
-from flash_attn import FlashMHA
+from flash_attn.flash_attention import FlashMHA
 
 
 class GPTLMHead(nn.Module):
