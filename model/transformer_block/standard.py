@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torchtyping import TensorType, patch_typeguard
 from typeguard import typechecked
-from flash_attn import FlashMHA
+from flash_attn.flash_attention import FlashMHA
 
 patch_typeguard()
 
