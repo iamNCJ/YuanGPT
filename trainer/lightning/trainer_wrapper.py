@@ -28,10 +28,10 @@ class TimerCallback(Callback):
     def on_train_end(self, trainer, pl_module):
         print(f"Training has finished at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}!")
 
-    def on_exception(self, trainer, pl_module, exception):
-        print("Saving model...")
-        trainer.save_checkpoint(f"./ckpt/{self.log_name}")
-        print("Model saved!")
+    # def on_exception(self, trainer, pl_module, exception):
+    #     print("Saving model...")
+    #     trainer.save_checkpoint(f"./ckpt/{self.log_name}")
+    #     print("Model saved!")
 
 
 class LitProgressBar(TQDMProgressBar):

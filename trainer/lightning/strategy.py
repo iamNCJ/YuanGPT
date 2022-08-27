@@ -10,9 +10,9 @@ custom_deepspeed_config = {
     # with the `accumulate_grad_batches` argument passed via the Lightning Trainer.
 
     # amp
-    "bf16": {
-        "enabled": True
-    },
+    # "bf16": {
+    #     "enabled": True
+    # },
 
     # ZeRO
     "zero_allow_untested_optimizer": True,

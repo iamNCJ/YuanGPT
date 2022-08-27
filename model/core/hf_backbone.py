@@ -132,7 +132,7 @@ class FlashGPT2Model(GPT2PreTrainedModel):
         # Model parallel
         self.model_parallel = False
         self.device_map = None
-        self.gradient_checkpointing = False
+        self.gradient_checkpointing = True
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -335,14 +335,7 @@ class FlashGPT2Model(GPT2PreTrainedModel):
                     output_attentions=output_attentions,
                 )
 
-            hidden_states = outputs[0]
-            if use_cache is True:
-                presents = presents + (outputs[1],)
-
-            if output_attentions:
-                all_self_attentions = all_self_attentions + (outputs[2 if use_cache else 1],)
-                if self.config.add_cross_attention:
-                    all_cross_attentions = all_cross_attentions + (outputs[3 if use_cache else 2],)
+            hidden_states = outputs
 
             # Model Parallel: If it's the last layer for that device, put things on the next device
             if self.model_parallel:
@@ -388,11 +381,6 @@ class FlashGPT2Block(nn.Module):
             causal=True  # for auto-regressive modeling in GPT
         )
         self.ln_2 = nn.LayerNorm(hidden_size, eps=config.layer_norm_epsilon)
-
-        if config.add_cross_attention:
-            self.crossattention = GPT2Attention(config, is_cross_attention=True, layer_idx=layer_idx)
-            self.ln_cross_attn = nn.LayerNorm(hidden_size, eps=config.layer_norm_epsilon)
-
         self.mlp = GPT2MLP(inner_dim, config)
 
     def forward(
@@ -411,32 +399,9 @@ class FlashGPT2Block(nn.Module):
         attn_outputs = self.attn(
             hidden_states
         )
-        # attn_output = attn_outputs[0]  # output_attn: a, present, (attentions)
-        # outputs = attn_outputs[1:]
+        attn_output = attn_outputs[0]  # output_attn: attn, weights (None)
         # residual connection
-        hidden_states = attn_outputs + residual
-
-        if encoder_hidden_states is not None:
-            # add one self-attention block for cross-attention
-            if not hasattr(self, "crossattention"):
-                raise ValueError(
-                    f"If `encoder_hidden_states` are passed, {self} has to be instantiated with "
-                    "cross-attention layers by setting `config.add_cross_attention=True`"
-                )
-            residual = hidden_states
-            hidden_states = self.ln_cross_attn(hidden_states)
-            cross_attn_outputs = self.crossattention(
-                hidden_states,
-                attention_mask=attention_mask,
-                head_mask=head_mask,
-                encoder_hidden_states=encoder_hidden_states,
-                encoder_attention_mask=encoder_attention_mask,
-                output_attentions=output_attentions,
-            )
-            attn_output = cross_attn_outputs[0]
-            # residual connection
-            hidden_states = residual + attn_output
-            outputs = attn_outputs + cross_attn_outputs[2:]  # add cross attentions if we output attention weights
+        hidden_states = attn_output + residual
 
         residual = hidden_states
         hidden_states = self.ln_2(hidden_states)
@@ -444,9 +409,4 @@ class FlashGPT2Block(nn.Module):
         # residual connection
         hidden_states = residual + feed_forward_hidden_states
 
-        if use_cache:
-            outputs = (hidden_states,) + outputs
-        else:
-            outputs = (hidden_states,) + outputs[1:]
-
-        return outputs  # hidden_states, present, (attentions, cross_attentions)
+        return hidden_states  # hidden_states
