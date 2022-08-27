@@ -14,7 +14,7 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=5e-5,
-        batch_size=16,
+        batch_size=20,
     )
     core_model = HFModel(config)
     dm = YuanDataModule(
@@ -27,6 +27,6 @@ if __name__ == '__main__':
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
-        accumulate_grad_batches=16,
+        # accumulate_grad_batches=16,
         seed=config.seed
     )
