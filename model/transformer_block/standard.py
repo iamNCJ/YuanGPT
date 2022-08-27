@@ -8,7 +8,6 @@ patch_typeguard()
 
 
 class StandardTransformerBlock(nn.Module):
-    # TODO: add mask
     def __init__(self, hidden_size: int, num_heads: int):
         super().__init__()
         self.layer_norm_1 = nn.LayerNorm(hidden_size)
@@ -20,7 +19,8 @@ class StandardTransformerBlock(nn.Module):
         self.MHA = FlashMHA(
             embed_dim=hidden_size,
             num_heads=num_heads,
-            batch_first=True
+            batch_first=True,
+            causal=True  # for auto-regressive modeling in GPT
         )
         self.layer_norm_2 = nn.LayerNorm(hidden_size)
         self.FFN = nn.Sequential(
