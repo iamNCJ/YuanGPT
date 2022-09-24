@@ -5,7 +5,7 @@ from dataclasses import asdict
 from datetime import datetime
 
 import pytorch_lightning as pl
-from pytorch_lightning.callbacks.progress.tqdm_progress import reset
+# from pytorch_lightning.callbacks.progress.tqdm_progress import reset
 
 from config import LMConfig
 from model import BaseModel
@@ -34,23 +34,23 @@ class TimerCallback(Callback):
     #     print("Model saved!")
 
 
-class LitProgressBar(TQDMProgressBar):
-    def __init__(self, config: LMConfig):
-        super().__init__()
-        self.lr = config.learning_rate
-        self.batch_size = config.batch_size
+# class LitProgressBar(TQDMProgressBar):
+#     def __init__(self, config: LMConfig):
+#         super().__init__()
+#         self.lr = config.learning_rate
+#         self.batch_size = config.batch_size
 
-    def on_train_epoch_start(self, trainer, pl_module):
-        super().on_train_epoch_start(trainer, pl_module)
-        total_train_batches = self.total_train_batches
-        total_val_batches = self.total_val_batches
-        if total_train_batches != float("inf") and total_val_batches != float("inf"):
-            # val can be checked multiple times per epoch
-            val_checks_per_epoch = total_train_batches // trainer.val_check_batch
-            total_val_batches = total_val_batches * val_checks_per_epoch
-        total_batches = total_train_batches + total_val_batches
-        reset(self.main_progress_bar, total=total_batches, current=self.train_batch_idx)
-        self.main_progress_bar.set_description(f"Epoch {trainer.current_epoch} lr={self.lr} bs={self.batch_size}")
+#     def on_train_epoch_start(self, trainer, pl_module):
+#         super().on_train_epoch_start(trainer, pl_module)
+#         total_train_batches = self.total_train_batches
+#         total_val_batches = self.total_val_batches
+#         if total_train_batches != float("inf") and total_val_batches != float("inf"):
+#             # val can be checked multiple times per epoch
+#             val_checks_per_epoch = total_train_batches // trainer.val_check_batch
+#             total_val_batches = total_val_batches * val_checks_per_epoch
+#         total_batches = total_train_batches + total_val_batches
+#         reset(self.main_progress_bar, total=total_batches, current=self.train_batch_idx)
+#         self.main_progress_bar.set_description(f"Epoch {trainer.current_epoch} lr={self.lr} bs={self.batch_size}")
 
 
 def train(
@@ -95,7 +95,7 @@ def train(
         enable_model_summary=False,
         strategy=use_distributed.pl_strategy,
         num_sanity_val_steps=0,
-        callbacks=[TimerCallback(log_name), LitProgressBar(model.config)],
+        callbacks=[TimerCallback(log_name)],
         **kwargs
     )
 

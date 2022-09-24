@@ -18,7 +18,7 @@ custom_deepspeed_config = {
     "zero_allow_untested_optimizer": True,
     "zero_optimization": {
         "stage": 2,
-        "offload_parameters": False,  # Enable Offloading parameters to the host CPU
+        # "offload_parameters": False,  # Enable Offloading parameters to the host CPU
         "contiguous_gradients": True,  # Reduce gradient fragmentation.
         "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
         # "offload_param": {
@@ -69,7 +69,9 @@ class DistributedStrategy(str, Enum):
     DEEPSPEED_STAGE_3 = 5
     DEEPSPEED_STAGE_2_OFFLOAD = 6
     DEEPSPEED_STAGE_3_OFFLOAD = 7
-    CUSTOM = 8
+    FSDP = 8
+    FSDP_CUSTOM = 9
+    CUSTOM = 10
 
     @property
     def use_offload(self):
@@ -109,6 +111,8 @@ class DistributedStrategy(str, Enum):
             DistributedStrategy.DEEPSPEED_STAGE_3: 'deepspeed_stage_3',
             DistributedStrategy.DEEPSPEED_STAGE_2_OFFLOAD: 'deepspeed_stage_2_offload',
             DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD: 'deepspeed_stage_3_offload',
+            DistributedStrategy.FSDP: 'fsdp_native',
+            DistributedStrategy.FSDP_CUSTOM: '',  # FIXME
             DistributedStrategy.CUSTOM: DeepSpeedPlugin(config=custom_deepspeed_config)
         }
         return mapping[self]

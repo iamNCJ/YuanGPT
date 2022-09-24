@@ -28,7 +28,7 @@ ds_config = {
         "stage": 2,
         # "offload_parameters": True,  # Enable Offloading parameters to the host CPU
         "contiguous_gradients": True,  # Reduce gradient fragmentation.
-        "overlap_comm": True,  # Overlap reduce/backward operation of gradients for speed.
+        "overlap_comm": False,  # Overlap reduce/backward operation of gradients for speed.
         # "offload_param": {
         #     "device": "cpu",
         #     "pin_memory": True
@@ -88,10 +88,13 @@ def train(config: LMConfig, data_module: pl.LightningDataModule) -> None:
         # Move the tensors to device
         data = [d.to(device) for d in data]
         # Forward pass
+        print('Forward')
         loss = model(*data)
         # Backward pass
+        print('Backward')
         model.backward(loss)
         # Optimizer Step
+        print('Optimizer')
         model.step()
         losses.append(loss.item())
         tqdm.write(f"loss: {loss.item()}")

@@ -1,11 +1,12 @@
 from config import LMConfig
 import contextlib
 import torch
+from torch.profiler import profile, record_function, ProfilerActivity
 import pytorch_lightning as pl
 from model import BaseModel
 from trainer.colossal_ai.criterion_wrapper import ColAICriterion
 # from trainer.colossal_ai.model_wrapper import ColAIModel
-from model import ColAIModel, HFModel, NativeModel
+from model import HFModel, NativeModel
 
 import colossalai
 import colossalai.utils as utils
@@ -50,7 +51,7 @@ def train(config: LMConfig,
                               shard_strategy=gpc.config.zero.model_config.shard_strategy,
                               shard_param=True)
     with ctx:
-        model = NativeModel(config)
+        model = HFModel(config)
 
     if use_zero:
         numel = ctx.model_numel_tensor.item()
@@ -105,7 +106,14 @@ def train(config: LMConfig,
         # hooks.LogTimingByEpochHook(timer, logger),
         # hooks.SaveCheckpointHook(checkpoint_dir='./ckpt')
     ]
-
+    # with profile(
+    #     # schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=2),
+    #     # on_trace_ready=torch.profiler.tensorboard_trace_handler('/workspace/log/yuan_profile'),
+    #     activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
+    #     record_shapes=True, 
+    #     profile_memory=True, 
+    #     with_stack=True
+    # ) as prof:
     trainer.fit(
         train_dataloader=train_dataloader,
         epochs=num_epochs,
@@ -114,3 +122,17 @@ def train(config: LMConfig,
         display_progress=True,
         return_output_label=False
     )
+        # engine.train()
+        # for data, label in train_dataloader:
+        #     data = data.cuda()
+        #     label = label.cuda()
+        #     engine.zero_grad()
+        #     output = engine(data)
+        #     loss = engine.criterion(output, label)
+        #     engine.backward(loss)
+        #     engine.step()
+        #     prof.step()
+    # prof.export_stacks("/tmp/profiler_stacks.txt", "self_cuda_time_total")
+    # prof.export_chrome_trace('trace.json')
+    # print(prof.key_averages().table(sort_by="self_cuda_memory_usage", row_limit=10))
+    

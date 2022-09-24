@@ -1,7 +1,8 @@
 from config import LMConfig
-from model import ColAIModel
+# from model import ColAIModel
 from data import YuanDataModule, MockDataModule
 from trainer.colossal_ai import col_ai_train
+import torch.distributed as dist
 
 if __name__ == '__main__':
     config = LMConfig(
@@ -11,8 +12,19 @@ if __name__ == '__main__':
         attention_heads=24,
         seq_length=2048,
         learning_rate=5e-5,
-        batch_size=4,
+        batch_size=16,
     )
+    # dist.init_process_group('nccl', init_method='tcp://172.25.2.104:29500', rank=0, world_size=2)
+    # dist.init_process_group('nccl')
+    # config = LMConfig(
+    #     vocab_size=2000,
+    #     hidden_size=768,
+    #     layer_num=12,
+    #     attention_heads=12,
+    #     seq_length=1024,
+    #     learning_rate=5e-5,
+    #     batch_size=16,
+    # )
     # config = LMConfig(
     #     vocab_size=53228,
     #     hidden_size=3072,
@@ -31,7 +43,7 @@ if __name__ == '__main__':
     #     vocab_size=config.vocab_size,
     #     seq_length=config.seq_length,
     #     batch_size=config.batch_size,
-    #     mock_data_size=100000
+    #     mock_data_size=320
     # )
     col_ai_train(
         config, dm,

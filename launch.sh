@@ -1,0 +1,1 @@
+GLOO_SOCKET_IFNAME=ens17f1 OMP_NUM_THREADS=32 torchrun --master_addr="172.25.2.104" --master_port=29500 --nnodes=2 --node_rank=0 --nproc_per_node=2 train.col_ai.py --config=trainer/colossal_ai/strategy.py

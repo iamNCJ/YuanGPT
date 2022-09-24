@@ -1,0 +1,1 @@
+docker run -it --name yuan_cage --gpus all --privileged --cap-add=SYS_ADMIN --ipc=host --network=host --ulimit memlock=-1 --ulimit stack=67108864 --device=/dev/infiniband -v $(pwd):/workspace registry.cn-hangzhou.aliyuncs.com/chiakicage/yuan:v1 /bin/bash
