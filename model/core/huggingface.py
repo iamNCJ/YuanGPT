@@ -20,7 +20,7 @@ class GenerativeLM(BaseModel):
         super().__init__()
         self.model = None
         self.config = config
-        self.gpt2_config = GPT2Config(
+        gpt2_config = GPT2Config(
             vocab_size=config.vocab_size,
             n_positions=config.seq_length,
             n_embd=config.hidden_size,
@@ -30,13 +30,13 @@ class GenerativeLM(BaseModel):
             n_inner=4 * config.hidden_size,
             use_cache=False
         )
+        with no_init_weights(_enable=False):
+            self.model = GPT2LMHeadHackedModel(gpt2_config)
+            # self.model.lm_head = torch.nn.functional.linear
+        # self.model.gradient_checkpointing_enable()
         self.loss_fct = nn.CrossEntropyLoss()
 
     def configure_sharded_model(self):
-        with no_init_weights(_enable=False):
-            self.model = GPT2LMHeadHackedModel(self.gpt2_config)
-            # self.model.lm_head = torch.nn.functional.linear
-        # self.model.gradient_checkpointing_enable()
         for i, layer in enumerate(self.model.transformer.h):
             self.model.transformer.h[i] = wrap(layer)
         self.model.lm_head = wrap(self.model.lm_head)
