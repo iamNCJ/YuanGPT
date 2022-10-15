@@ -23,7 +23,7 @@ if __name__ == '__main__':
     )
     pl_train(
         core_model, dm, "model_name",
-        use_distributed=DistributedStrategy.FSDP,
+        use_distributed=DistributedStrategy.FSDP_CUSTOM,
         gpus=-1 if torch.cuda.is_available() else None,
         precision=16,
         max_epochs=1,
