@@ -1,5 +1,4 @@
-# from datetime import datetime
-from enum import Enum
+from enum import Enum, auto
 from torch.distributed.fsdp.fully_sharded_data_parallel import CPUOffload, BackwardPrefetch
 from pytorch_lightning.strategies import DDPFullyShardedNativeStrategy, DeepSpeedStrategy
 
@@ -62,17 +61,18 @@ class DistributedStrategy(str, Enum):
     """
     Enum for the different distributed strategies.
     """
-    NONE = 0
-    DDP = 1
-    DDP_SHARDED = 2
-    DEEPSPEED_STAGE_1 = 3
-    DEEPSPEED_STAGE_2 = 4
-    DEEPSPEED_STAGE_3 = 5
-    DEEPSPEED_STAGE_2_OFFLOAD = 6
-    DEEPSPEED_STAGE_3_OFFLOAD = 7
-    FSDP = 8
-    FSDP_CUSTOM = 9
-    CUSTOM = 10
+    NONE = auto()
+    DDP = auto()
+    DDP_SHARDED = auto()
+    DEEPSPEED_STAGE_1 = auto()
+    DEEPSPEED_STAGE_2 = auto()
+    DEEPSPEED_STAGE_3 = auto()
+    DEEPSPEED_STAGE_2_OFFLOAD = auto()
+    DEEPSPEED_STAGE_3_OFFLOAD = auto()
+    DEEPSPEED_CUSTOM = auto()
+    FSDP = auto()
+    FSDP_CUSTOM = auto()
+    COLLOSSALAI = auto()
 
     @property
     def use_offload(self):
@@ -99,7 +99,7 @@ class DistributedStrategy(str, Enum):
         Check whether the strategy uses custom DeepSpeed config json.
         :return: bool
         """
-        return self == DistributedStrategy.CUSTOM
+        return self == DistributedStrategy.DEEPSPEED_CUSTOM
 
     @property
     def pl_strategy(self) -> str:
@@ -112,11 +112,12 @@ class DistributedStrategy(str, Enum):
             DistributedStrategy.DEEPSPEED_STAGE_3: 'deepspeed_stage_3',
             DistributedStrategy.DEEPSPEED_STAGE_2_OFFLOAD: 'deepspeed_stage_2_offload',
             DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD: 'deepspeed_stage_3_offload',
+            DistributedStrategy.DEEPSPEED_CUSTOM: DeepSpeedStrategy(config=custom_deepspeed_config),
             DistributedStrategy.FSDP: 'fsdp_native',
             DistributedStrategy.FSDP_CUSTOM: DDPFullyShardedNativeStrategy(
                 cpu_offload=CPUOffload(offload_params=True),
                 backward_prefetch=BackwardPrefetch.BACKWARD_PRE
             ),
-            DistributedStrategy.CUSTOM: DeepSpeedStrategy(config=custom_deepspeed_config)
+            DistributedStrategy.COLLOSSALAI: 'colossalai'
         }
         return mapping[self]
