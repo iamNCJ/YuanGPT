@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from torch.distributed.fsdp.wrap import wrap
 from torchtyping import TensorType
 from transformers import GPT2Config
 from transformers.modeling_utils import no_init_weights
@@ -17,8 +18,9 @@ torch._C._jit_override_can_fuse_on_gpu(True)
 class GenerativeLM(BaseModel):
     def __init__(self, config: LMConfig):
         super().__init__()
+        self.model = None
         self.config = config
-        gpt2_config = GPT2Config(
+        self.gpt2_config = GPT2Config(
             vocab_size=config.vocab_size,
             n_positions=config.seq_length,
             n_embd=config.hidden_size,
@@ -28,11 +30,16 @@ class GenerativeLM(BaseModel):
             n_inner=4 * config.hidden_size,
             use_cache=False
         )
-        with no_init_weights(_enable=False):
-            self.model = GPT2LMHeadHackedModel(gpt2_config)
-            # self.model.lm_head = torch.nn.functional.linear
-            self.model.gradient_checkpointing_enable()
         self.loss_fct = nn.CrossEntropyLoss()
+
+    def configure_sharded_model(self):
+        with no_init_weights(_enable=False):
+            self.model = GPT2LMHeadHackedModel(self.gpt2_config)
+            # self.model.lm_head = torch.nn.functional.linear
+        # self.model.gradient_checkpointing_enable()
+        for i, layer in enumerate(self.model.transformer.h):
+            self.model.transformer.h[i] = wrap(layer)
+        self.model.lm_head = wrap(self.model.lm_head)
 
     def forward(self, input_ids: TensorType["batch_size", "seq_length"],
                 attention_masks: TensorType["batch_size", "seq_length"] = None,
