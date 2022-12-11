@@ -2,7 +2,6 @@ from config import LMConfig
 # from model import ColAIModel
 from data import YuanDataModule, MockDataModule
 from trainer.colossal_ai import col_ai_train
-import torch.distributed as dist
 
 if __name__ == '__main__':
     config = LMConfig(

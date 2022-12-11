@@ -5,8 +5,8 @@ from torch.profiler import profile, record_function, ProfilerActivity
 import pytorch_lightning as pl
 from model import BaseModel
 from trainer.colossal_ai.criterion_wrapper import ColAICriterion
-# from trainer.colossal_ai.model_wrapper import ColAIModel
-from model import HFModel, NativeModel
+from model import HFModel, NativeModel, ColAIModel, PPModel
+from model.core.pipeline.hf_pp import PipelineGPT2Model
 
 import colossalai
 import colossalai.utils as utils
@@ -17,6 +17,11 @@ from colossalai.nn import LinearWarmupLR
 from colossalai.utils.timer import MultiTimer
 from colossalai.trainer import hooks, Trainer
 from colossalai.zero.init_ctx import ZeroInitContext
+from colossalai.pipeline.pipelinable import PipelinableContext
+from colossalai.utils import is_using_pp
+from transformers import GPT2Config
+
+from colossalai.nn.optimizer import HybridAdam
 
 def calc_local_model_size(model: torch.nn.Module):
     numel_per_device = 0
@@ -39,20 +44,53 @@ def train(config: LMConfig,
 
     parser = colossalai.get_default_parser()
 
+    gpt2_config = GPT2Config(
+        vocab_size=config.vocab_size,
+        n_positions=config.seq_length,
+        n_embd=config.hidden_size,
+        n_layer=config.layer_num,
+        n_head=config.attention_heads,
+        activation_function='relu',
+        n_inner=4 * config.hidden_size,
+        use_cache=False
+    )
+
     args = parser.parse_args()
     disable_existing_loggers()
     colossalai.launch_from_torch(config=args.config, seed=seed)
     logger.info('ColAI launched', ranks=[0])
 
     use_zero = hasattr(gpc.config, 'zero')
-    ctx = contextlib.nullcontext()
-    if use_zero:
-        ctx = ZeroInitContext(target_device=torch.cuda.current_device(),
-                              shard_strategy=gpc.config.zero.model_config.shard_strategy,
-                              shard_param=True)
-    with ctx:
-        model = HFModel(config)
+    use_pipeline = is_using_pp()
+    num_chunks = getattr(gpc.config.model, 'num_chunks', 1)
 
+    if not use_pipeline:
+        ctx = contextlib.nullcontext()
+        if use_zero:
+            ctx = ZeroInitContext(target_device=torch.cuda.current_device(),
+                                shard_strategy=gpc.config.zero.model_config.shard_strategy,
+                                shard_param=True)
+        with ctx:
+            model = PPModel(config)
+    else:
+        pipelinable = PipelinableContext()
+        with pipelinable:
+            model = PipelineGPT2Model(gpt2_config, config.batch_size)
+        exec_seq = ['embedding']
+        for i in range(config.layer_num):
+            exec_seq.append('blocks.{}'.format(i))
+        exec_seq.append('norm')
+        exec_seq.append('head')
+        
+        pipelinable.to_layer_list(exec_seq)
+        ctx = contextlib.nullcontext()
+        if use_zero:
+            ctx = ZeroInitContext(target_device=torch.cuda.current_device(),
+                                shard_strategy=gpc.config.zero.model_config.shard_strategy,
+                                shard_param=True)
+        with ctx:
+            model = pipelinable.partition(num_chunks, gpc.pipeline_parallel_size,
+                                          gpc.get_local_rank(ParallelMode.PIPELINE))._module_list
     if use_zero:
         numel = ctx.model_numel_tensor.item()
     else:
@@ -61,17 +99,18 @@ def train(config: LMConfig,
     logger.info(f'Numel: {numel}', ranks=[0])
 
     criterion = ColAICriterion(model)
-    optimizer = model.get_optimizer()
+    # optimizer = model.get_optimizer()
+    optimizer = HybridAdam(model.parameters(), lr=config.learning_rate)
 
     data_module.setup(has_labels=True)
-    # train_dataloader = data_module.train_dataloader()
-    train_dataloader = utils.get_dataloader(data_module.dataset.train_dataset,
-                                            seed=seed,
-                                            batch_size=config.batch_size,
-                                            pin_memory=True,
-                                            shuffle=True,
-                                            drop_last=True,
-                                            num_workers=8)
+    train_dataloader = data_module.train_dataloader()
+    # train_dataloader = utils.get_dataloader(data_module.dataset.train_dataset,
+    #                                         seed=seed,
+    #                                         batch_size=config.batch_size,
+    #                                         pin_memory=True,
+    #                                         shuffle=True,
+    #                                         drop_last=True,
+    #                                         num_workers=8)
     logger.info('dataloader built', ranks=[0])
 
     lr_scheduler = LinearWarmupLR(optimizer, total_steps=num_epochs, warmup_steps=warmup_steps)

@@ -2,6 +2,9 @@
 from enum import Enum
 from pytorch_lightning.plugins import DeepSpeedPlugin
 
+from torch.distributed.fsdp.fully_sharded_data_parallel import CPUOffload
+from pytorch_lightning.strategies import DDPFullyShardedNativeStrategy
+
 custom_deepspeed_config = {
     # Batch Size
     "train_micro_batch_size_per_gpu": 16,
@@ -112,7 +115,7 @@ class DistributedStrategy(str, Enum):
             DistributedStrategy.DEEPSPEED_STAGE_2_OFFLOAD: 'deepspeed_stage_2_offload',
             DistributedStrategy.DEEPSPEED_STAGE_3_OFFLOAD: 'deepspeed_stage_3_offload',
             DistributedStrategy.FSDP: 'fsdp_native',
-            DistributedStrategy.FSDP_CUSTOM: '',  # FIXME
+            DistributedStrategy.FSDP_CUSTOM: DDPFullyShardedNativeStrategy(cpu_offload=CPUOffload(offload_params=True)),
             DistributedStrategy.CUSTOM: DeepSpeedPlugin(config=custom_deepspeed_config)
         }
         return mapping[self]

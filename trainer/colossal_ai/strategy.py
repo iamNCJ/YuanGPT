@@ -1,6 +1,12 @@
-from colossalai.zero.shard_utils import TensorShardStrategy
+from colossalai.zero.shard_utils import BucketTensorShardStrategy, TensorShardStrategy
 from colossalai.amp import AMP_TYPE
 
+BATCH_SIZE = 16
+NUM_MICRO_BATCHES = 2
+SEQ_LEN = 2048
+HIDDEN_SIZE = 3072
+
+TENSOR_SHAPE = (BATCH_SIZE // NUM_MICRO_BATCHES, SEQ_LEN, HIDDEN_SIZE)
 
 zero = dict(
     # model_config=dict(
@@ -31,5 +37,12 @@ zero = dict(
 # fp16 = dict(
 #     mode=AMP_TYPE.TORCH,
 # )
+model = dict(
+    num_chunks=1
+)
 
-# gradient_accumulation = 16
+gradient_accumulation = 16
+
+parallel = dict(
+    pipeline=2
+)

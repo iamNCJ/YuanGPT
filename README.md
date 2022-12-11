@@ -67,10 +67,17 @@ We still prefer to use `torchrun`
 torchrun --nnodes=1 --nproc_per_node=2 train.pstar.py
 ```
 
+### Colossal AI
+```sh
+GLOO_SOCKET_IFNAME=ibs5 OMP_NUM_THREADS=32 torchrun --master_addr="172.25.2.105" --master_port=29500 --nnodes=2 --node_rank=1 --nproc_per_node=2 train.col_ai.py --config=trainer/colossal_ai/strategy.py
+```
+
 ## Run Profile
 
 ```sh
 OMP_NUM_THREADS=32 nsys profile -o cpu_adam torchrun --nnodes=2 --nproc_per_node=2 --master_addr GPU04 --master_port 9001 --node_rank 0 train.ds_pl.py
+
+OMP_NUM_THREADS=32 nsys profile --gpu-metrics-device=all --gpuctxsw=true --nic-metrics=true --cuda-memory-usage=true --cudabacktrace=all torchrun  --nnodes=2 --nproc_per_node=2 train.col_ai.py --config=trainer/colossal_ai/strategy.py
 ```
 
 ## Docker Environment

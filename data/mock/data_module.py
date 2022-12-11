@@ -3,7 +3,8 @@ from typing import Optional
 import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader, TensorDataset
-
+from torch.utils.data.sampler import RandomSampler
+from torch.utils.data.distributed import DistributedSampler
 
 class MockDataModule(pl.LightningDataModule):
     """
@@ -15,7 +16,8 @@ class MockDataModule(pl.LightningDataModule):
             seq_length: int,
             batch_size: int = 32,
             mock_data_size: int = 500000,
-            num_workers: int = 8
+            num_workers: int = 8,
+            use_distributed_sampler: bool = False
     ):
         super().__init__()
         self.vocab_size = vocab_size
@@ -23,6 +25,7 @@ class MockDataModule(pl.LightningDataModule):
         self.batch_size = batch_size
         self.data_size = mock_data_size
         self.num_workers = num_workers
+        self.use_distributed_sampler = use_distributed_sampler
         self.dataset = None
 
     def setup(self, stage: Optional[str] = None, has_labels: bool = False) -> None:
@@ -34,10 +37,18 @@ class MockDataModule(pl.LightningDataModule):
             self.dataset = TensorDataset(ids)
 
     def train_dataloader(self):
-        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        if self.use_distributed_sampler:
+            sampler = DistributedSampler(self.dataset)
+        else:
+            sampler = RandomSampler(self.dataset)
+        return DataLoader(self.dataset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=sampler)
 
     def val_dataloader(self):
-        return DataLoader(self.dataset, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
+        if self.use_distributed_sampler:
+            sampler = DistributedSampler(self.dataset)
+        else:
+            sampler = RandomSampler(self.dataset)
+        return DataLoader(self.dataset, batch_size=self.batch_size, num_workers=self.num_workers, sampler=sampler)
 
 
 if __name__ == '__main__':
