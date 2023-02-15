@@ -1,12 +1,12 @@
-from config import LMConfig
+from models.config import LMConfig
 import contextlib
 import torch
 from torch.profiler import profile, record_function, ProfilerActivity
-import pytorch_lightning as pl
-from model import BaseModel
+from models import BaseModel
 from trainer.colossal_ai.criterion_wrapper import ColAICriterion
-from model import HFModel, NativeModel, ColAIModel, PPModel
-from model.core.pipeline.hf_pp import PipelineGPT2Model
+from models import HFModel, ColAIModel, PPModel
+from models.core.pipeline.hf_pp import PipelineGPT2Model
+from data.datamodule import DataModule
 
 from torch.optim import SGD
 
@@ -42,7 +42,7 @@ def calc_local_model_size(model: torch.nn.Module):
     return numel_per_device
 
 def train(config: LMConfig,
-          data_module: pl.LightningDataModule,
+          data_module: DataModule,
           num_epochs: int = 1,
           warmup_steps: int = 5,
           seed: int = 42) -> None:
@@ -68,7 +68,6 @@ def train(config: LMConfig,
 
     use_zero = hasattr(gpc.config, 'zero')
     use_pipeline = is_using_pp()
-    num_chunks = getattr(gpc.config.model, 'num_chunks', 1)
 
     # ppg.set_global_info(rank=args.rank,
     #                     world_size=args.world_size,
@@ -77,9 +76,9 @@ def train(config: LMConfig,
     if not use_pipeline:
         ctx = contextlib.nullcontext()
         if use_zero:
-            ctx = ZeroInitContext(target_device=torch.cuda.current_device(),
+            ctx = ZeroInitContext(target_device=torch.device('cuda'),
                                 shard_strategy=gpc.config.zero.model_config.shard_strategy,
-                                shard_param=True)
+                                shard_param=False)
         with ctx:
             model = HFModel(config)
         # with ColoInitContext(device=get_current_device()):
@@ -128,8 +127,8 @@ def train(config: LMConfig,
     logger.info(f'Numel: {numel}', ranks=[0])
 
     criterion = ColAICriterion(model)
-    # optimizer = model.get_optimizer()
-    optimizer = SGD(model.parameters(), lr=config.learning_rate)
+    optimizer = model.get_optimizer()
+    # optimizer = SGD(model.parameters(), lr=config.learning_rate)
 
     data_module.setup(has_labels=True)
     # train_dataloader = data_module.train_dataloader()

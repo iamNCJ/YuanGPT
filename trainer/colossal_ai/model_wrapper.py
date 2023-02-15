@@ -1,6 +1,6 @@
 from torch import nn
 
-from model import BaseModel
+from models import BaseModel
 from colossalai.nn.optimizer import HybridAdam
 
 class ColAIModel(nn.Module):

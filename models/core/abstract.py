@@ -3,7 +3,7 @@ from abc import abstractmethod
 import torch
 from torch import nn
 
-from config import LMConfig
+from models.config import LMConfig
 
 
 class BaseModel(nn.Module):

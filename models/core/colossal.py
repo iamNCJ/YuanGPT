@@ -1,7 +1,7 @@
 import math
 
-from config import LMConfig
-from model.core.abstract import BaseModel
+from models.config import LMConfig
+from models.core.abstract import BaseModel
 
 import torch
 from torchtyping import TensorType
@@ -45,11 +45,8 @@ class GenerativeLM(BaseModel):
         shift_logits = logits[..., :-1, :].contiguous()
         shift_labels = labels[..., 1:].contiguous()
         res = self.loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
-        # assert torch.isnan(shift_logits).sum() == 0
-        # assert torch.isnan(shift_labels).sum() == 0
-        # assert torch.isnan(res).sum() == 0
         return res
 
     def get_optimizer(self) -> torch.optim.Optimizer:
-        return torch.optim.Adam(self.parameters(), lr=self.config.learning_rate)
+        return HybridAdam(self.parameters(), lr=self.config.learning_rate)
 

@@ -5,14 +5,9 @@ from transformers import GPT2Config
 from transformers.modeling_utils import no_init_weights
 
 
-from config import LMConfig
-from model.core.abstract import BaseModel
+from models.config import LMConfig
+from models.core.abstract import BaseModel
 from .hf_pp import PipelineGPT2Model
-
-torch._C._jit_set_profiling_mode(False)
-torch._C._jit_set_profiling_executor(False)
-torch._C._jit_override_can_fuse_on_cpu(True)
-torch._C._jit_override_can_fuse_on_gpu(True)
 
 
 class GenerativeLM(BaseModel):

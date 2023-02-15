@@ -1,21 +1,22 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
+from ..datamodule import DataModule
 
 import numpy as np
 import torch
-import pytorch_lightning as pl
-from torch.utils.data import DataLoader, TensorDataset, random_split
+
+from torch.utils.data import DataLoader, TensorDataset, Subset, random_split
 from torch.utils.data.sampler import RandomSampler
 from torch.utils.data.distributed import DistributedSampler
 
 
 @dataclass
 class YuanDataset:
-    train_dataset: TensorDataset
-    val_dataset: TensorDataset
+    train_dataset: Union[TensorDataset, Subset]
+    val_dataset: Union[TensorDataset, Subset]
 
 
-class YuanDataModule(pl.LightningDataModule):
+class YuanDataModule(DataModule):
     """
     Data module for Inspur Yuan dataset.
     """
@@ -39,10 +40,8 @@ class YuanDataModule(pl.LightningDataModule):
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
             ids = (npz_data['id'])[0:(488282 + 100)].astype(np.int64)
-            # print(f'max id = {torch.max(ids)}')
-            # attention_masks = torch.from_numpy(npz_data['attention_mask'].astype(np.int64))
+
             if (has_labels):
-                # labels = np.roll(ids, -1, axis=1)
                 labels = ids
                 dataset = TensorDataset(torch.from_numpy(ids), torch.from_numpy(labels))
             else:
@@ -52,6 +51,7 @@ class YuanDataModule(pl.LightningDataModule):
             self.dataset = YuanDataset(train_dataset, val_dataset)
 
     def train_dataloader(self):
+        assert self.dataset is not None
         if self.use_distributed_sampler:
             sampler = DistributedSampler(self.dataset.train_dataset)
         else:
@@ -65,6 +65,7 @@ class YuanDataModule(pl.LightningDataModule):
         )
 
     def val_dataloader(self):
+        assert self.dataset is not None
         if self.use_distributed_sampler:
             sampler = DistributedSampler(self.dataset.val_dataset)
         else:

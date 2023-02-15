@@ -1,19 +1,20 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import torch
-import pytorch_lightning as pl
-from torch.utils.data import DataLoader, TensorDataset, random_split
+from torch.utils.data import DataLoader, TensorDataset, Subset, random_split
 
+from ..datamodule import DataModule
 
 @dataclass
 class WOSDataset:
-    train_dataset: TensorDataset
-    val_dataset: TensorDataset
+
+    train_dataset: Union[TensorDataset, Subset]
+    val_dataset: Union[TensorDataset, Subset]
 
 
-class WOSDataModule(pl.LightningDataModule):
+class WOSDataModule(DataModule):
     """
     Data module for Web of Science dataset.
     """
@@ -31,14 +32,14 @@ class WOSDataModule(pl.LightningDataModule):
         self.processed_data_path = processed_data_path
         self.pin_memory = pin_memory
         self.drop_attention_mask = drop_attention_mask
-        self.dataset: Optional[WOSDataset] = None
+        self.dataset: WOSDataset
 
     def setup(self, stage: Optional[str] = None) -> None:
         if self.dataset is None:
             npz_data = np.load(self.processed_data_path)
-            ids = torch.from_numpy(npz_data['id']).type(torch.LongTensor)
+            ids = torch.from_numpy(npz_data['id']).type('long')
             if not self.drop_attention_mask:
-                attention_masks = torch.from_numpy(npz_data['attention_mask']).type(torch.LongTensor)
+                attention_masks = torch.from_numpy(npz_data['attention_mask']).type(torch.long)
                 dataset = TensorDataset(ids, attention_masks)
             else:
                 dataset = TensorDataset(ids)

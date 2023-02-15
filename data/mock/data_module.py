@@ -1,12 +1,14 @@
 from typing import Optional
 
-import pytorch_lightning as pl
+
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.data.sampler import RandomSampler
 from torch.utils.data.distributed import DistributedSampler
 
-class MockDataModule(pl.LightningDataModule):
+from ..datamodule import DataModule
+
+class MockDataModule(DataModule):
     """
     Mock data module for testing. The data in this module is generated randomly.
     """
@@ -26,7 +28,7 @@ class MockDataModule(pl.LightningDataModule):
         self.data_size = mock_data_size
         self.num_workers = num_workers
         self.use_distributed_sampler = use_distributed_sampler
-        self.dataset = None
+        self.dataset: TensorDataset
 
     def setup(self, stage: Optional[str] = None, has_labels: bool = False) -> None:
         ids = torch.randint(self.vocab_size, (self.data_size, self.seq_length))

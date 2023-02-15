@@ -1,6 +1,6 @@
 from torch import nn
 
-from model import BaseModel
+from models import BaseModel
 
 class ColAICriterion(nn.Module):
     def __init__(self, model: BaseModel):

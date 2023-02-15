@@ -6,14 +6,9 @@ from transformers.modeling_utils import no_init_weights
 
 import torch.nn.functional as F
 
-from config import LMConfig
-from model.core.abstract import BaseModel
-from model.core.hf_backbone import GPT2LMHeadHackedModel
-
-torch._C._jit_set_profiling_mode(False)
-torch._C._jit_set_profiling_executor(False)
-torch._C._jit_override_can_fuse_on_cpu(True)
-torch._C._jit_override_can_fuse_on_gpu(True)
+from models.config import LMConfig
+from models.core.abstract import BaseModel
+from models.core.hf_backbone import GPT2LMHeadHackedModel
 
 
 class GenerativeLM(BaseModel):
