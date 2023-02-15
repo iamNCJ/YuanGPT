@@ -10,7 +10,7 @@ class ColAICriterion(nn.Module):
 
     def loss(self, logits, labels):
         
-        print(logits.shape, labels.shape)
+        # print(logits.shape, labels.shape)
         shift_logits = logits[..., :-1, :].contiguous()
         shift_labels = labels[..., 1:].contiguous()
         # half = self.config.batch_size // 2

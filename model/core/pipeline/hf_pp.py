@@ -83,7 +83,7 @@ class FlashGPT2Block(ParallelLayer):
         hidden_states: Optional[Tuple[torch.FloatTensor]],
         attention_mask: Optional[torch.FloatTensor] = None,
     ) -> Union[Tuple[torch.Tensor], Optional[Tuple[torch.Tensor, Tuple[torch.FloatTensor, ...]]]]:
-        print('index: ', self.index)
+        # print('index: ', self.index)
         if self.training:
             def create_custom_forward(module):
                 def custom_forward(*inputs):
@@ -121,12 +121,12 @@ class GPTLMHead(nn.Module):
         return self.dense.weight
 
     def forward(self, x):
-        print('LMHead')
+        # print('LMHead')
         # the size of x before dense is (BATCH_SIZE, SEQ_LEN, HIDDEN_SIZE)
         # the size of x after dense is (BATCH_SIZE, SEQ_LEN, VOCAB_SIZE)
         x = x.view(-1, self.seq_len, self.hidden_size)
         x = self.dense(x)
-        print(x.size())
+        # print(x.size())
         return x
 
 
@@ -152,8 +152,8 @@ class PipelineGPT2Model(GPT2PreTrainedModel):
             config.embd_pdrop
         )
 
-        self.blocks = nn.ModuleList(
-            [FlashGPT2Block(config, layer_idx=i) for i in range(config.num_hidden_layers)]
+        self.blocks = nn.Sequential(
+            *[FlashGPT2Block(config, layer_idx=i) for i in range(config.num_hidden_layers)]
         )
         self.norm = nn.LayerNorm(config.n_embd, eps=config.layer_norm_epsilon)
         # self.lm_head = VocabParallelGPTLMHead(vocab_size=config.vocab_size, embed_dim=config.n_embd)

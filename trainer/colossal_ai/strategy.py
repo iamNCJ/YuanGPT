@@ -38,11 +38,11 @@ zero = dict(
 #     mode=AMP_TYPE.TORCH,
 # )
 model = dict(
-    num_chunks=1
+    
 )
 
 gradient_accumulation = 16
 
-parallel = dict(
-    pipeline=2
-)
+# parallel = dict(
+#     pipeline=2
+# )
